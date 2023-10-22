@@ -28,9 +28,14 @@ namespace LightPath.Bank
             {
                 _cache.Add(_key, resource);
             }
-
         }
 
-        public static bool Unregister(string key) => _cache.Remove(key);
+        public static bool Unregister(string key)
+        {
+            lock (_cache)
+            {
+                return _cache.Remove(key);
+            }
+        }
     }
 }

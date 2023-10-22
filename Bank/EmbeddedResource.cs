@@ -23,9 +23,18 @@ namespace LightPath.Bank
             }
         }
         public Dictionary<string, string> Attributes { get; set; } = new();
-        public byte[] ByteContents => Exceptions != null ? null : IsCached
-                                      ? _contents ?? (_contents = Helpers.GetEmbeddedBytes(Assembly, NameSpace, FileName))
-                                      : Helpers.GetEmbeddedBytes(Assembly, NameSpace, FileName);
+        public byte[] ByteContents
+        {
+            get
+            {
+                if (Exceptions != null) return null;
+
+                return IsCached
+                       ? _contents ?? (_contents = Helpers.GetEmbeddedBytes(Assembly, NameSpace, FileName))
+                       : Helpers.GetEmbeddedBytes(Assembly, NameSpace, FileName);
+            }
+        }
+
         public string ContentType { get; set; }
         public List<Exception> Exceptions
         {
