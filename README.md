@@ -6,5 +6,5 @@ Bank is a library facilitating the serving of embedded resources located in a .N
 
 ### Add the Nuget Package to Your Project
 ### Wire Up the Bank Middleware 
-### Register the Embedded Resources
+### Register Your Embedded Resources
 ### Add References to the Embedded Resources in Your Other Projects
