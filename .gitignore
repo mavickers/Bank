@@ -3,3 +3,5 @@ Bank/bin/
 Bank/obj/
 packages/
 *.user
+
+Bank/Properties/PublishProfiles/
