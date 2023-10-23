@@ -3,18 +3,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Web.Mvc;
 
 namespace LightPath.Bank
 {
     public static class BankHelpers
     {
+        private static readonly byte[] byteOrderMarker = { 0xEF, 0xBB, 0xBF };
+        private static readonly List<string> UnclosedTags = new() { "link" };
+        private static readonly List<string> SelfClosingTags = new() { "img" };
+        private static readonly List<string> SupportedCssContentTypes = new() { "text/css" };
         private static readonly List<string> SupportedImageContentTypes = new() { "image/gif", "image/jpeg", "image/png", "image/tiff" };
         private static readonly List<string> SupportedScriptContentTypes = new() { "application/javascript", "text/javascript" };
 
 
-        public static string AsString(this byte[] source) => System.Text.Encoding.Default.GetString(source);
+        public static string AsString(this byte[] source)
+        {
+            // first, trim off the byte order marker if it's present
+
+            var bytes = source[0] == byteOrderMarker[0] && source[1] == byteOrderMarker[1] && source[2] == byteOrderMarker[2] ? source.Skip(3).ToArray() : source;
+
+            return System.Text.Encoding.UTF8.GetString(bytes);
+        }
 
         public static byte[] GetEmbeddedBytes(Assembly assembly, string nameSpace, string fileName)
         {
@@ -45,6 +55,7 @@ namespace LightPath.Bank
         {
             if (resource == null) return MvcHtmlString.Create("<!-- embedded resource is null -->");
             if (resource.Exceptions.Any()) return MvcHtmlString.Create($"<!-- embedded resource '{(string.IsNullOrWhiteSpace(resource.FileName) ? "(NULL FILENAME)" : resource.FileName)}' contains exceptions, unable to render -->");
+            if (SupportedCssContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "link", "href", true);
             if (SupportedImageContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "img", "src", true);
             if (SupportedScriptContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "script", "src", false);
 
@@ -57,10 +68,11 @@ namespace LightPath.Bank
 
             var usableAttributes = resource.Attributes?.Where(attr => urlAttribute != attr.Key.ToLower()).ToDictionary(attr => attr.Key, attr => attr.Value) ?? new Dictionary<string, string>();
             var attributesString = string.Join(" ", usableAttributes.Select(attr => attr.Key + (string.IsNullOrWhiteSpace(attr.Value) ? string.Empty : $"=\"{attr.Value}\""))).Trim();
+            var closingMarkup = UnclosedTags.Contains(tag) ? ">" : SelfClosingTags.Contains(tag) ? " />" : $"></{tag}>";
 
             attributesString = string.IsNullOrWhiteSpace(attributesString) ? string.Empty : $" {attributesString}";
 
-            return MvcHtmlString.Create($"<{tag} {urlAttribute}=\"{resource.Url}\"{attributesString}{(isSelfClosing ? " />" : $"></{tag}>")}");
+            return MvcHtmlString.Create($"<{tag} {urlAttribute}=\"{(string.IsNullOrWhiteSpace(resource.UrlRenderPrepend) ? string.Empty : resource.UrlRenderPrepend)}{resource.Url}\"{attributesString}{closingMarkup}");
         }
     }
 }

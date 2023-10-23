@@ -27,7 +27,7 @@ namespace LightPath.Bank
         {
             get
             {
-                if (Exceptions != null) return null;
+                if (Exceptions?.Any() ?? false) return null;
 
                 return IsCached
                        ? _contents ?? (_contents = BankHelpers.GetEmbeddedBytes(Assembly, NameSpace, FileName))
@@ -79,6 +79,11 @@ namespace LightPath.Bank
             }
         }
         public string Url { get; private set; }
+
+        /// <summary>
+        /// Value with which to prepend the Url when using RenderEmbeddedResource
+        /// </summary>
+        public string UrlRenderPrepend { get; set; }
 
         /// <summary>
         /// Set the Url property based on the value of the other properties
