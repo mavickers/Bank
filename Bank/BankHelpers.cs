@@ -1,10 +1,19 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using System.Web.Mvc;
 
 namespace LightPath.Bank
 {
     public static class BankHelpers
     {
+        private static readonly List<string> SupportedImageContentTypes = new() { "image/gif", "image/jpeg", "image/png", "image/tiff" };
+        private static readonly List<string> SupportedScriptContentTypes = new() { "application/javascript", "text/javascript" };
+
+
         public static string AsString(this byte[] source) => System.Text.Encoding.Default.GetString(source);
 
         public static byte[] GetEmbeddedBytes(Assembly assembly, string nameSpace, string fileName)
@@ -30,6 +39,28 @@ namespace LightPath.Bank
             var output = reader?.ReadToEnd();
 
             return output;
+        }
+
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, BankEmbeddedResource resource)
+        {
+            if (resource == null) return MvcHtmlString.Create("<!-- embedded resource is null -->");
+            if (resource.Exceptions.Any()) return MvcHtmlString.Create($"<!-- embedded resource '{(string.IsNullOrWhiteSpace(resource.FileName) ? "(NULL FILENAME)" : resource.FileName)}' contains exceptions, unable to render -->");
+            if (SupportedImageContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "img", "src", true);
+            if (SupportedScriptContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "script", "src", false);
+
+            return MvcHtmlString.Create($"<!-- unable to render embedded resource '{resource.Url}' because the content type is not supported -->");
+        }
+
+        private static MvcHtmlString RenderEmbeddedResource(BankEmbeddedResource resource, string tag, string urlAttribute, bool isSelfClosing = false)
+        {
+            if (resource == null) throw new ArgumentNullException(nameof(resource));
+
+            var usableAttributes = resource.Attributes?.Where(attr => urlAttribute != attr.Key.ToLower()).ToDictionary(attr => attr.Key, attr => attr.Value) ?? new Dictionary<string, string>();
+            var attributesString = string.Join(" ", usableAttributes.Select(attr => attr.Key + (string.IsNullOrWhiteSpace(attr.Value) ? string.Empty : $"=\"{attr.Value}\""))).Trim();
+
+            attributesString = string.IsNullOrWhiteSpace(attributesString) ? string.Empty : $" {attributesString}";
+
+            return MvcHtmlString.Create($"<{tag} {urlAttribute}=\"{resource.Url}\"{attributesString}{(isSelfClosing ? " />" : $"></{tag}>")}");
         }
     }
 }

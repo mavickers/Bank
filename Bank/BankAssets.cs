@@ -23,7 +23,7 @@ namespace LightPath.Bank
             var _key = string.IsNullOrWhiteSpace(key) ? $"EmbeddedResource-({resource.Url})" : key;
 
             if (_cache.ContainsKey(_key)) throw new Exception($"Asset with key {_key} is already registered");
-            if (resource.Exceptions != null) throw new Exception("Embedded resource contains exceptions", resource.Exceptions.First());
+            if (resource.Exceptions?.Any() ?? false) throw new Exception("Embedded resource contains exceptions", resource.Exceptions.First());
             if (ContainsUrl(resource.Url)) throw new Exception($"Embedded resource with url '${resource.Url}' is already registered");
 
             lock (_cache)

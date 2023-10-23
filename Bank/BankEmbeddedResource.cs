@@ -22,7 +22,7 @@ namespace LightPath.Bank
                 SetUrl();
             }
         }
-        public Dictionary<string, string> Attributes { get; set; } = new();
+        public Dictionary<string, string> Attributes { get; } = new();
         public byte[] Contents
         {
             get
@@ -47,7 +47,7 @@ namespace LightPath.Bank
                 if (string.IsNullOrEmpty(FileName)) results.Add(new NullReferenceException(nameof(FileName)));
                 if (string.IsNullOrWhiteSpace(ContentType)) results.Add(new NullReferenceException(nameof(ContentType)));
 
-                return results.Any() ? results : null;
+                return results;
             }
         }
         public bool IsCached { get; set; }
