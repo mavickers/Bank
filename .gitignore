@@ -1,6 +1,8 @@
 .vs/
 Bank/bin/
 Bank/obj/
+Tests/bin/
+Tests/obj/
 packages/
 *.user
 
