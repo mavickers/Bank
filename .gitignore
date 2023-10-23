@@ -2,3 +2,4 @@
 Bank/bin/
 Bank/obj/
 packages/
+*.user
