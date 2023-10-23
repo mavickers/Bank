@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace LightPath.Bank
 {
-    public class EmbeddedResource
+    public class BankEmbeddedResource
     {
         private Assembly _assembly;
         private byte[] _contents;
@@ -23,15 +23,15 @@ namespace LightPath.Bank
             }
         }
         public Dictionary<string, string> Attributes { get; set; } = new();
-        public byte[] ByteContents
+        public byte[] Contents
         {
             get
             {
                 if (Exceptions != null) return null;
 
                 return IsCached
-                       ? _contents ?? (_contents = Helpers.GetEmbeddedBytes(Assembly, NameSpace, FileName))
-                       : Helpers.GetEmbeddedBytes(Assembly, NameSpace, FileName);
+                       ? _contents ?? (_contents = BankHelpers.GetEmbeddedBytes(Assembly, NameSpace, FileName))
+                       : BankHelpers.GetEmbeddedBytes(Assembly, NameSpace, FileName);
             }
         }
 
@@ -96,16 +96,9 @@ namespace LightPath.Bank
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(_facadeFileName) && string.IsNullOrWhiteSpace(_fileName))
-            {
-                Url = string.Empty;
+            var fileName = string.IsNullOrWhiteSpace(_facadeFileName) ? _fileName : _facadeFileName;
 
-                return;
-            }
-
-            Url = string.IsNullOrWhiteSpace(_facadeFileName)
-                  ? $"/{Assembly.GetName().Name}/{NameSpace}/{FileName}"
-                  : $"/{Assembly.GetName().Name}/{NameSpace}/{_facadeFileName}";
+            Url = string.IsNullOrWhiteSpace(fileName) ? string.Empty : $"/{Assembly.GetName().Name}/{NameSpace}/{fileName}";
         }
     }
 }

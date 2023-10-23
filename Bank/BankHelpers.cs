@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace LightPath.Bank
 {
-    public static class Helpers
+    public static class BankHelpers
     {
         public static string AsString(this byte[] source) => System.Text.Encoding.Default.GetString(source);
 
