@@ -1,0 +1,1 @@
+﻿console.log('Hello, I\'m in the console');

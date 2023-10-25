@@ -51,6 +51,14 @@ namespace LightPath.Bank
             return output;
         }
 
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey)
+        {
+            if (string.IsNullOrWhiteSpace(resourceKey)) return MvcHtmlString.Create("<!-- unable to render embedded resource because the resourceKey was empty or null -->");
+            if (!BankAssets.ContainsKey(resourceKey)) return MvcHtmlString.Create("<!-- unable to render embedded resource '{resourceKey}' because it was not found -->");
+
+            return RenderEmbeddedResource(htmlHelper, BankAssets.GetByKey(resourceKey));
+        }
+
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, BankEmbeddedResource resource)
         {
             if (resource == null) return MvcHtmlString.Create("<!-- embedded resource is null -->");

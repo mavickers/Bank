@@ -1,14 +1,29 @@
-﻿using Microsoft.Owin;
+﻿using System.Collections.Generic;
+using Microsoft.Owin;
 using System.Threading.Tasks;
 
 namespace LightPath.Bank
 {
-    public class BankMiddleware : OwinMiddleware
+    public class BankMiddleware 
     {
-        public BankMiddleware(OwinMiddleware next) : base(next) { }
+        private readonly OwinMiddleware _next;
 
-        public override async Task Invoke(IOwinContext context)
+        public BankMiddleware(OwinMiddleware next)
         {
+            _next = next;
+        }
+
+        public async Task Invoke(IDictionary<string, object> args)
+        {
+            var context = new OwinContext(args);
+
+            if (!ConditionsMatch(context))
+            {
+                await _next.Invoke(context);
+
+                return;
+            }
+
             var resource = BankAssets.GetByUrl(context.Request.Path.Value);
 
             if (resource?.Contents == null)
