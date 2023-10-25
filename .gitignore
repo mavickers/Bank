@@ -3,6 +3,8 @@ Bank/bin/
 Bank/obj/
 Tests/bin/
 Tests/obj/
+TestApp/bin/
+TestApp/obj/
 packages/
 *.user
 
