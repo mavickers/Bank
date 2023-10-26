@@ -2,17 +2,18 @@
     <PropertyGroup>
         <TargetFrameworks>net48</TargetFrameworks>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Authors>mavickers</Authors>
+        <Authors>mavickers,lightpath</Authors>
         <Owners>mavickers,lightpath</Owners>
         <Company>LightPath Solutions, LLC</Company>
         <Product>Bank Embedded Resources Library</Product>
         <Copyright>2023 LightPath Solutions, LLC</Copyright>
         <PackageProjectUrl>https://github.com/mavickers/Bank</PackageProjectUrl>
-        <PackageId>LightPath.Bank</PackageId>
         <Title>Bank</Title>
         <AssemblyName>LightPath.Bank</AssemblyName>
         <RootNamespace>LightPath.Bank</RootNamespace>
+        <PackageId>LightPath.Bank</PackageId>
         <PackageLicenseFile>license.md</PackageLicenseFile>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageIcon>icon.png</PackageIcon>
         <PackageIconUrl />
         <RepositoryUrl>https://github.com/mavickers/Bank</RepositoryUrl>
@@ -20,9 +21,9 @@
         <PackageTags></PackageTags>
         <Description>A library for registering, retrieving and rendering embedded resources</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <Version>1.0.1</Version>
-        <AssemblyVersion>1.0.1</AssemblyVersion>
-        <FileVersion>1.0.1</FileVersion>
+        <Version>1.0.2</Version>
+        <AssemblyVersion>1.0.2</AssemblyVersion>
+        <FileVersion>1.0.2</FileVersion>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
@@ -36,6 +37,10 @@
             <PackagePath></PackagePath>
         </None>
         <None Include="license.md">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+        <None Include="readme.md">
             <Pack>True</Pack>
             <PackagePath></PackagePath>
         </None>
