@@ -70,26 +70,30 @@ namespace LightPath.Bank
             return output;
         }
 
-        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey, dynamic helperAttributes = null)
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey) => RenderEmbeddedResource(htmlHelper, resourceKey, false);
+
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey, dynamic helperAttributes = null) => RenderEmbeddedResource(htmlHelper, resourceKey, false, helperAttributes);
+
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey, bool withCacheBuster = false, dynamic helperAttributes = null)
         {
             if (string.IsNullOrWhiteSpace(resourceKey)) return MvcHtmlString.Create("<!-- unable to render embedded resource because the resourceKey was empty or null -->");
             if (!BankAssets.ContainsKey(resourceKey)) return MvcHtmlString.Create("<!-- unable to render embedded resource '{resourceKey}' because it was not found -->");
 
-            return RenderEmbeddedResource(htmlHelper, BankAssets.GetByKey(resourceKey), helperAttributes);
+            return RenderEmbeddedResource(htmlHelper, BankAssets.GetByKey(resourceKey), withCacheBuster, helperAttributes);
         }
 
-        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, BankEmbeddedResource resource, dynamic helperAttributes = null)
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, BankEmbeddedResource resource, bool withCacheBuster = false, dynamic helperAttributes = null)
         {
             if (resource == null) return MvcHtmlString.Create("<!-- embedded resource is null -->");
             if (resource.Exceptions.Any()) return MvcHtmlString.Create($"<!-- embedded resource '{(string.IsNullOrWhiteSpace(resource.FileName) ? "(NULL FILENAME)" : resource.FileName)}' contains exceptions, unable to render -->");
-            if (SupportedCssContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "link", "href", helperAttributes, true);
-            if (SupportedImageContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "img", "src", helperAttributes, true);
-            if (SupportedScriptContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "script", "src", helperAttributes, false);
+            if (SupportedCssContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "link", "href", withCacheBuster, helperAttributes);
+            if (SupportedImageContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "img", "src", withCacheBuster, helperAttributes);
+            if (SupportedScriptContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "script", "src", withCacheBuster, helperAttributes);
 
             return MvcHtmlString.Create($"<!-- unable to render embedded resource '{resource.Url}' because the content type is not supported -->");
         }
 
-        private static MvcHtmlString RenderEmbeddedResource(BankEmbeddedResource resource, string tag, string urlAttribute, dynamic helperAttributes = null, bool isSelfClosing = false)
+        private static MvcHtmlString RenderEmbeddedResource(BankEmbeddedResource resource, string tag, string urlAttribute, bool withCacheBuster = false, dynamic helperAttributes = null)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
 
@@ -113,7 +117,7 @@ namespace LightPath.Bank
 
             attributesString = string.IsNullOrWhiteSpace(attributesString) ? string.Empty : $" {attributesString}";
 
-            return MvcHtmlString.Create($"<{tag} {urlAttribute}=\"{(string.IsNullOrWhiteSpace(resource.UrlRenderPrepend) ? string.Empty : resource.UrlRenderPrepend)}{resource.Url}\"{attributesString}{closingMarkup}");
+            return MvcHtmlString.Create($"<{tag} {urlAttribute}=\"{(string.IsNullOrWhiteSpace(resource.UrlRenderPrepend) ? string.Empty : resource.UrlRenderPrepend)}{resource.Url}{(withCacheBuster ? $"?{DateTime.Now.Ticks}" : string.Empty)}\"{attributesString}{closingMarkup}");
         }
     }
 }
