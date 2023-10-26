@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Web.Helpers;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
+using System.Web.UI.WebControls;
 
 namespace LightPath.Bank
 {
@@ -24,6 +29,20 @@ namespace LightPath.Bank
             var bytes = source[0] == byteOrderMarker[0] && source[1] == byteOrderMarker[1] && source[2] == byteOrderMarker[2] ? source.Skip(3).ToArray() : source;
 
             return System.Text.Encoding.UTF8.GetString(bytes);
+        }
+
+        private static Dictionary<string, string> ConvertObjectToDictionary(object @object)
+        {
+            if (@object == null) return new Dictionary<string, string>();
+
+            var props = @object.GetType().GetProperties();
+            
+            return props.ToDictionary(x => ConvertCamelCaseToDashed(x.Name), x => x.GetValue(@object, null)?.ToString());
+        }
+
+        private static string ConvertCamelCaseToDashed(string source)
+        {
+            return string.Concat(source.Select((x, i) => i > 0 && char.IsUpper(x) ? $"-{x}" : x.ToString())).ToLower();
         }
 
         public static byte[] GetEmbeddedBytes(Assembly assembly, string nameSpace, string fileName)
@@ -51,30 +70,44 @@ namespace LightPath.Bank
             return output;
         }
 
-        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey)
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey, dynamic helperAttributes = null)
         {
             if (string.IsNullOrWhiteSpace(resourceKey)) return MvcHtmlString.Create("<!-- unable to render embedded resource because the resourceKey was empty or null -->");
             if (!BankAssets.ContainsKey(resourceKey)) return MvcHtmlString.Create("<!-- unable to render embedded resource '{resourceKey}' because it was not found -->");
 
-            return RenderEmbeddedResource(htmlHelper, BankAssets.GetByKey(resourceKey));
+            return RenderEmbeddedResource(htmlHelper, BankAssets.GetByKey(resourceKey), helperAttributes);
         }
 
-        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, BankEmbeddedResource resource)
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, BankEmbeddedResource resource, dynamic helperAttributes = null)
         {
             if (resource == null) return MvcHtmlString.Create("<!-- embedded resource is null -->");
             if (resource.Exceptions.Any()) return MvcHtmlString.Create($"<!-- embedded resource '{(string.IsNullOrWhiteSpace(resource.FileName) ? "(NULL FILENAME)" : resource.FileName)}' contains exceptions, unable to render -->");
-            if (SupportedCssContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "link", "href", true);
-            if (SupportedImageContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "img", "src", true);
-            if (SupportedScriptContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "script", "src", false);
+            if (SupportedCssContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "link", "href", helperAttributes, true);
+            if (SupportedImageContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "img", "src", helperAttributes, true);
+            if (SupportedScriptContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "script", "src", helperAttributes, false);
 
             return MvcHtmlString.Create($"<!-- unable to render embedded resource '{resource.Url}' because the content type is not supported -->");
         }
 
-        private static MvcHtmlString RenderEmbeddedResource(BankEmbeddedResource resource, string tag, string urlAttribute, bool isSelfClosing = false)
+        private static MvcHtmlString RenderEmbeddedResource(BankEmbeddedResource resource, string tag, string urlAttribute, dynamic helperAttributes = null, bool isSelfClosing = false)
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
 
-            var usableAttributes = resource.Attributes?.Where(attr => urlAttribute != attr.Key.ToLower()).ToDictionary(attr => attr.Key, attr => attr.Value) ?? new Dictionary<string, string>();
+            // concat the attributes for rendering into a new dictionary; we don't actually
+            // want to add the attributes passed in from the render call to the embedded resource.
+            // we also want to camelcase -> dashed conversion of the keys along the way
+            // so that attributes such as "dataTest" are converted to "data-test" in the tag.
+
+            var attributesToRender = ConvertObjectToDictionary(helperAttributes) as Dictionary<string, string> ?? new Dictionary<string, string>();
+
+            foreach (var attr in resource.Attributes)
+            {
+                var attrDashed = ConvertCamelCaseToDashed(attr.Key);
+
+                if (!attributesToRender.ContainsKey(attrDashed)) attributesToRender.Add(attrDashed, attr.Value);
+            }
+
+            var usableAttributes = attributesToRender.Where(attr => urlAttribute != attr.Key.ToLower()).ToDictionary(attr => attr.Key, attr => attr.Value);
             var attributesString = string.Join(" ", usableAttributes.Select(attr => attr.Key + (string.IsNullOrWhiteSpace(attr.Value) ? string.Empty : $"=\"{attr.Value}\""))).Trim();
             var closingMarkup = UnclosedTags.Contains(tag) ? ">" : SelfClosingTags.Contains(tag) ? " />" : $"></{tag}>";
 

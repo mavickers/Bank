@@ -48,6 +48,8 @@
       <Folder Include="Properties\" />
     </ItemGroup>
     <ItemGroup>
+      <Reference Include="Microsoft.CSharp" />
       <Reference Include="System.Web" />
+      <Reference Include="System.Web.Extensions" />
     </ItemGroup>
 </Project>
