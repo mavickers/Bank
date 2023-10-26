@@ -15,6 +15,16 @@ namespace TestApp
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            var imageResource = new BankEmbeddedResource
+            {
+                Assembly = Assembly.GetExecutingAssembly(),
+                NameSpace = "Content",
+                FileName = "ASPNetLogo.png",
+                ContentType = "image/png",
+                IsCached = false,
+                Attributes = { { "style", "height:50px" }, { "class", "doNothing" } }
+            };
+
             var scriptResource = new BankEmbeddedResource
             {
                 Assembly = Assembly.GetExecutingAssembly(),
@@ -25,6 +35,7 @@ namespace TestApp
                 IsCached = true
             };
 
+            BankAssets.Register("asp-net-logo", imageResource);
             BankAssets.Register("hello-world-script", scriptResource);
         }
     }

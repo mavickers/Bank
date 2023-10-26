@@ -11,7 +11,7 @@ namespace TestApp
     {
         public void Configuration(IAppBuilder app)
         {
-            app.Use(typeof(BankMiddleware));
+            app.MapBankMiddleware();
             app.UseStageMarker(PipelineStage.Authenticate);
         }
     }
