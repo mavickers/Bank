@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Web.Helpers;
 using System.Web.Mvc;
-using System.Web.Script.Serialization;
 using System.Web.UI.WebControls;
 
 namespace LightPath.Bank
@@ -20,7 +16,6 @@ namespace LightPath.Bank
         private static readonly List<string> SupportedCssContentTypes = new() { "text/css" };
         private static readonly List<string> SupportedImageContentTypes = new() { "image/gif", "image/jpeg", "image/png", "image/tiff" };
         private static readonly List<string> SupportedScriptContentTypes = new() { "application/javascript", "text/javascript" };
-
 
         public static string AsString(this byte[] source)
         {
