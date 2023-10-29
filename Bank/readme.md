@@ -9,7 +9,7 @@ Install the LightPath.Bank nuget package either from the package manager console
 
 `c:\> install-package LightPath.Bank`
 
-!(../.github/readme-images/nuget-package-manager.png)
+![test](../.github/readme-images/nuget-package-manager.png)
 ### Wire Up the Bank Middleware 
 
 ## How Do I Use It?
