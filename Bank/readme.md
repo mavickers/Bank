@@ -5,9 +5,11 @@ Bank is a library facilitating the serving of embedded resources located in a .N
 ## How Do I Install It?
 
 ### Add the Nuget Package to Your Project
-Install the LightPath.Bank nuget package either from the package manager console or the Visual Studio nuget package manager.
+Install the LightPath.Bank nuget package from the package manager console:
 
 `c:\> install-package LightPath.Bank`
+
+...or the Visual Studio nuget package manager:
 
 ![test](../.github/readme-images/nuget-package-manager.png)
 ### Wire Up the Bank Middleware 
