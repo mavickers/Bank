@@ -55,8 +55,7 @@ Each embedded resource that needs to be served should be registered with Bank. T
         NameSpace = "Scripts",
         FileName = "HelloWorld.js",
         FacadeFileName = "GoodbyeWorld.js",
-        ContentType = "application/javascript",
-        IsCached = true
+        ContentType = "application/javascript"
     };
 
     BankAssets.Register("hello-world-script", scriptResource);
@@ -71,8 +70,8 @@ There are two steps for registration:
     Optional properties include:
     
     * FacadeFileName. In the above example the resource has the filename "HelloWorld.js", but will be served when the app receives a request for "GoodbyeWorld.js". If this value is not set, the FileName property will be used for requests for the resource.
-    * IsCached. This is a flag indicating if the contents of the resource should be cached in memory. For some assets (such as scripts) the contents can be cached in memory for improved performance, while other assets (such as images) the contents can remain un-cached to reduce memory usage. The default value for IsCached is false.
-* **Register the resource.** This is done by calling BankAssets.Register and passing in the new BankEmbeddedResource instance. In the example above the Register method is called with an additional key name as the first parameter, but it can be called with just the embedded resource parameter. In the latter case a unique key name will be assigned to the resource in the BankAssets resource dictionary.
+
+* * **Register the resource.** This is done by calling BankAssets.Register and passing in the new BankEmbeddedResource instance. In the example above the Register method is called with an additional key name as the first parameter, but it can be called with just the embedded resource parameter. In the latter case a unique key name will be assigned to the resource in the BankAssets resource dictionary.
 
   The key name can be used to retrieve or reference the resource later. It is recommended to assign a friendly key name but not necessary.
 
@@ -102,4 +101,7 @@ Assuming an assembly name of "TestApp", when the page is rendered it will create
 
 A url path is built using the assembly name, namespace and facade filename from the registered embedded resource. When the request is received using this path, the Bank middleware intervenes, looking up the path in its registered resources and serving the content in the response.
 
-Note the cache-busting querystring added to the src attribute. This is an optional feature that is turned **off** by default. The RendedEmbeddedResource method call in the example above includes a **true** value for the cache-busting parameter which outputs the cache-busting querystring. The cache-busting value is regenerated each time the web app starts.
+### Additional Notes
+
+* Notice the cache-busting querystring added to the src attribute when the html helper renders the script tag. This is an optional feature that is turned **off** by default. The RendedEmbeddedResource method call in the example above includes a **true** value for the cache-busting parameter which outputs the cache-busting querystring. The cache-busting value is regenerated each time the web app starts.
+* Because this library facilitates the serving of assets that are embedded in .Net dlls, those assets are automatically cached in memory with the dll and are not continually read from the file system. The serving of these assets should be performant, but at the cost of memory usage. Beware of embedding lots of large assets (such as images).

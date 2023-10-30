@@ -21,7 +21,6 @@ namespace TestApp
                 NameSpace = "Content",
                 FileName = "ASPNetLogo.png",
                 ContentType = "image/png",
-                IsCached = false,
                 Attributes = { { "style", "height:50px" }, { "class", "doNothing" } }
             };
 
@@ -31,8 +30,7 @@ namespace TestApp
                 NameSpace = "Scripts",
                 FileName = "HelloWorld.js",
                 FacadeFileName = "GoodbyeWorld.js",
-                ContentType = "application/javascript",
-                IsCached = true
+                ContentType = "application/javascript"
             };
 
             BankAssets.Register("asp-net-logo", imageResource);

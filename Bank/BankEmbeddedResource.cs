@@ -8,7 +8,6 @@ namespace LightPath.Bank
     public class BankEmbeddedResource
     {
         private Assembly _assembly;
-        private byte[] _contents;
         private string _facadeFileName;
         private string _fileName;
         private string _nameSpace;
@@ -23,17 +22,7 @@ namespace LightPath.Bank
             }
         }
         public Dictionary<string, string> Attributes { get; } = new();
-        public byte[] Contents
-        {
-            get
-            {
-                if (Exceptions?.Any() ?? false) return null;
-
-                return IsCached
-                       ? _contents ?? (_contents = BankHelpers.GetEmbeddedBytes(Assembly, NameSpace, FileName))
-                       : BankHelpers.GetEmbeddedBytes(Assembly, NameSpace, FileName);
-            }
-        }
+        public byte[] Contents => (Exceptions?.Any() ?? false) ? null : BankHelpers.GetEmbeddedBytes(Assembly, NameSpace, FileName);
 
         public string ContentType { get; set; }
         public List<Exception> Exceptions
@@ -50,7 +39,6 @@ namespace LightPath.Bank
                 return results;
             }
         }
-        public bool IsCached { get; set; }
         public string FacadeFileName
         {
             get => _facadeFileName;
