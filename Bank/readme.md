@@ -1,6 +1,6 @@
 ﻿# Bank - A Library for Registering, Retrieving and Rendering Embedded Resources
 
-Bank is a library facilitating the serving of embedded resources located in a .Net DLL. The allows web-consumable resources (such as scripts, css, or images) to be embedded in a .Net project and deployed and served from a single DLL. Think of it as a replacement for WebResource.axd and ScriptResource.axd.
+Bank is a library facilitating the serving of embedded resources located in a .Net DLL. It allows web-consumable resources (such as scripts, css, or images) to be embedded in a .Net project and deployed and served from a single DLL. Think of it as a replacement for WebResource.axd and ScriptResource.axd.
 
 The steps in the following quick start guide are implemented in a web project included in the repository named "TestApp". It is the code generated when creating a new ASP.Net project in Visual Studio, modified to demonstrate Bank functionality.
 
