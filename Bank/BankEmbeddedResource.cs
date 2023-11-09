@@ -91,7 +91,7 @@ namespace LightPath.Bank
 
             var fileName = string.IsNullOrWhiteSpace(_facadeFileName) ? _fileName : _facadeFileName;
 
-            Url = string.IsNullOrWhiteSpace(fileName) ? string.Empty : $"/{Assembly.GetName().Name}/{NameSpace}/{fileName}";
+            Url = string.IsNullOrWhiteSpace(fileName) ? string.Empty : $"/{Assembly.GetName().Name}/{NameSpace}/{fileName}".Replace("//", "/");
         }
     }
 }
