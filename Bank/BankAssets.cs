@@ -32,6 +32,8 @@ namespace LightPath.Bank
             }
         }
 
+        public static int Total => _cache?.Count ?? 0;
+
         public static bool Unregister(string key)
         {
             lock (_cache)
