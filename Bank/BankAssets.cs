@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace LightPath.Bank
 {
     public static class BankAssets
     {
+        public static IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
         private static readonly Dictionary<string, BankEmbeddedResource> _cache = new();
 
         public static bool ContainsKey(string key) => _cache.ContainsKey(key);
