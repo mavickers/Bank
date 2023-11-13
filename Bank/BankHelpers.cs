@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
-using System.Web.UI.WebControls;
 
 namespace LightPath.Bank
 {
@@ -111,13 +110,9 @@ namespace LightPath.Bank
                 if (!attributesToRender.ContainsKey(attrDashed)) attributesToRender.Add(attrDashed, attr.Value);
             }
 
-            //var usableAttributes = attributesToRender.Where(attr => !reservedAttributes.ContainsKey(attr.Key.ToLower())).ToDictionary(attr => attr.Key, attr => attr.Value);
             var attributesString = string.Join(" ", attributesToRender.Select(attr => attr.Key + (string.IsNullOrWhiteSpace(attr.Value) ? string.Empty : $"=\"{attr.Value}\""))).Trim();
             var closingMarkup = UnclosedTags.Contains(tag) ? ">" : SelfClosingTags.Contains(tag) ? " />" : $"></{tag}>";
 
-            //attributesString = string.IsNullOrWhiteSpace(attributesString) ? string.Empty : $" {attributesString}";
-
-            //return MvcHtmlString.Create($"<{tag} {urlAttribute}=\"{(string.IsNullOrWhiteSpace(resource.UrlRenderPrepend) ? string.Empty : resource.UrlRenderPrepend)}{resource.Url}{(withCacheBuster ? $"?{DateTime.Now.Ticks}" : string.Empty)}\"{attributesString}{closingMarkup}");
             return MvcHtmlString.Create($"<{tag} {attributesString}{closingMarkup}");
         }
     }
