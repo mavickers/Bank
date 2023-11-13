@@ -10,21 +10,15 @@ namespace LightPath.Bank
 {
     public static class BankHelpers
     {
-        private static readonly byte[] byteOrderMarker = { 0xEF, 0xBB, 0xBF };
         private static readonly List<string> UnclosedTags = new() { "link" };
         private static readonly List<string> SelfClosingTags = new() { "img" };
         private static readonly List<string> SupportedCssContentTypes = new() { "text/css" };
         private static readonly List<string> SupportedImageContentTypes = new() { "image/gif", "image/jpeg", "image/png", "image/tiff" };
         private static readonly List<string> SupportedScriptContentTypes = new() { "application/javascript", "text/javascript" };
+        private static Dictionary<string, string> ReservedCssAttributes => new() { { "href", "#" }, { "rel", "stylesheet" } };
+        private static Dictionary<string, string> ReservedImageAttributes => new() { { "src", "#" } };
+        private static Dictionary<string, string> ReservedScriptAttributes => new() { { "src", "#" } };
 
-        public static string AsString(this byte[] source)
-        {
-            // first, trim off the byte order marker if it's present
-
-            var bytes = source[0] == byteOrderMarker[0] && source[1] == byteOrderMarker[1] && source[2] == byteOrderMarker[2] ? source.Skip(3).ToArray() : source;
-
-            return System.Text.Encoding.UTF8.GetString(bytes);
-        }
 
         private static Dictionary<string, string> ConvertObjectToDictionary(object @object)
         {
@@ -81,23 +75,34 @@ namespace LightPath.Bank
         {
             if (resource == null) return MvcHtmlString.Create("<!-- embedded resource is null -->");
             if (resource.Exceptions.Any()) return MvcHtmlString.Create($"<!-- embedded resource '{(string.IsNullOrWhiteSpace(resource.FileName) ? "(NULL FILENAME)" : resource.FileName)}' contains exceptions, unable to render -->");
-            if (SupportedCssContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "link", "href", withCacheBuster, helperAttributes);
-            if (SupportedImageContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "img", "src", withCacheBuster, helperAttributes);
-            if (SupportedScriptContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "script", "src", withCacheBuster, helperAttributes);
+            if (SupportedCssContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "link", "href", ReservedCssAttributes, withCacheBuster, helperAttributes);
+            if (SupportedImageContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "img", "src", ReservedImageAttributes, withCacheBuster, helperAttributes);
+            if (SupportedScriptContentTypes.Contains(resource.ContentType)) return RenderEmbeddedResource(resource, "script", "src", ReservedScriptAttributes, withCacheBuster, helperAttributes);
 
             return MvcHtmlString.Create($"<!-- unable to render embedded resource '{resource.Url}' because the content type is not supported -->");
         }
 
-        private static MvcHtmlString RenderEmbeddedResource(BankEmbeddedResource resource, string tag, string urlAttribute, bool withCacheBuster = false, dynamic helperAttributes = null)
+        private static MvcHtmlString RenderEmbeddedResource
+        (
+            BankEmbeddedResource resource, 
+            string tag, 
+            string urlAttribute, 
+            Dictionary<string, string> reservedAttributes = null, 
+            bool withCacheBuster = false, 
+            dynamic helperAttributes = null
+        )
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-
+            
             // concat the attributes for rendering into a new dictionary; we don't actually
             // want to add the attributes passed in from the render call to the embedded resource.
             // we also want to camelcase -> dashed conversion of the keys along the way
             // so that attributes such as "dataTest" are converted to "data-test" in the tag.
 
-            var attributesToRender = ConvertObjectToDictionary(helperAttributes) as Dictionary<string, string> ?? new Dictionary<string, string>();
+
+            var attributesToRender = (reservedAttributes ?? new Dictionary<string, string>())
+                                      .AddRange(ConvertObjectToDictionary(helperAttributes) as Dictionary<string, string> ?? new Dictionary<string, string>())
+                                      .SetOrAdd(urlAttribute, $"{(string.IsNullOrWhiteSpace(resource.UrlRenderPrepend) ? string.Empty : resource.UrlRenderPrepend)}{resource.Url}{(withCacheBuster ? $"?{DateTime.Now.Ticks}" : string.Empty)}");
 
             foreach (var attr in resource.Attributes)
             {
@@ -106,13 +111,14 @@ namespace LightPath.Bank
                 if (!attributesToRender.ContainsKey(attrDashed)) attributesToRender.Add(attrDashed, attr.Value);
             }
 
-            var usableAttributes = attributesToRender.Where(attr => urlAttribute != attr.Key.ToLower()).ToDictionary(attr => attr.Key, attr => attr.Value);
-            var attributesString = string.Join(" ", usableAttributes.Select(attr => attr.Key + (string.IsNullOrWhiteSpace(attr.Value) ? string.Empty : $"=\"{attr.Value}\""))).Trim();
+            //var usableAttributes = attributesToRender.Where(attr => !reservedAttributes.ContainsKey(attr.Key.ToLower())).ToDictionary(attr => attr.Key, attr => attr.Value);
+            var attributesString = string.Join(" ", attributesToRender.Select(attr => attr.Key + (string.IsNullOrWhiteSpace(attr.Value) ? string.Empty : $"=\"{attr.Value}\""))).Trim();
             var closingMarkup = UnclosedTags.Contains(tag) ? ">" : SelfClosingTags.Contains(tag) ? " />" : $"></{tag}>";
 
-            attributesString = string.IsNullOrWhiteSpace(attributesString) ? string.Empty : $" {attributesString}";
+            //attributesString = string.IsNullOrWhiteSpace(attributesString) ? string.Empty : $" {attributesString}";
 
-            return MvcHtmlString.Create($"<{tag} {urlAttribute}=\"{(string.IsNullOrWhiteSpace(resource.UrlRenderPrepend) ? string.Empty : resource.UrlRenderPrepend)}{resource.Url}{(withCacheBuster ? $"?{DateTime.Now.Ticks}" : string.Empty)}\"{attributesString}{closingMarkup}");
+            //return MvcHtmlString.Create($"<{tag} {urlAttribute}=\"{(string.IsNullOrWhiteSpace(resource.UrlRenderPrepend) ? string.Empty : resource.UrlRenderPrepend)}{resource.Url}{(withCacheBuster ? $"?{DateTime.Now.Ticks}" : string.Empty)}\"{attributesString}{closingMarkup}");
+            return MvcHtmlString.Create($"<{tag} {attributesString}{closingMarkup}");
         }
     }
 }

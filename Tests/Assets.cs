@@ -15,7 +15,7 @@ namespace Tests
         private readonly string script1Rendered = "<script src=\"/prepend/Tests/TestAssets/HelloWorld.js\"></script>";
         private readonly string script2Rendered = "<script src=\"/prepend/Tests/TestAssets/HelloWorld.js\" defer class=\"testing\"></script>";
         private readonly string style1Contents = ".HelloWorld { font-weight: 900 }";
-        private readonly string style1Rendered = "<link href=\"/Tests/TestAssets/HelloWorld.css\">";
+        private readonly string style1Rendered = "<link href=\"/Tests/TestAssets/HelloWorld.css\" rel=\"stylesheet\">";
 
         public Assets()
         {
@@ -64,10 +64,10 @@ namespace Tests
             var html3 = htmlHelper.RenderEmbeddedResource(style1);
             var html3Content = style1.Contents.AsString();
 
-            Assert.Equal(html1.ToString(), script1Rendered);
-            Assert.Equal(html2.ToString(), script2Rendered);
-            Assert.Equal(html3.ToString(), style1Rendered);
-            Assert.Equal(html3Content, style1Contents);
+            Assert.Equal(script1Rendered, html1.ToString());
+            Assert.Equal(script2Rendered, html2.ToString());
+            Assert.Equal(style1Rendered, html3.ToString());
+            Assert.Equal(style1Contents, html3Content);
         }
 
         private static HtmlHelper CreateHtmlHelper(ViewDataDictionary viewData)

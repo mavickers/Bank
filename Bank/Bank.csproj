@@ -21,9 +21,9 @@
         <PackageTags></PackageTags>
         <Description>A library for registering, retrieving and rendering embedded resources</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <Version>1.0.7</Version>
-        <AssemblyVersion>1.0.7</AssemblyVersion>
-        <FileVersion>1.0.7</FileVersion>
+        <Version>1.0.9</Version>
+        <AssemblyVersion>1.0.9</AssemblyVersion>
+        <FileVersion>1.0.9</FileVersion>
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
