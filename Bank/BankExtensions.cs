@@ -7,13 +7,32 @@ namespace LightPath.Bank
     {
         private static readonly byte[] byteOrderMarker = { 0xEF, 0xBB, 0xBF };
 
-        public static string AsString(this byte[] source)
+        /// <summary>
+        /// Return bytes[] as string, with an option to inject variables into placeholders.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="variables">Key/Value pairs of variable names/values to inject in the string.</param>
+        /// <returns></returns>
+        public static string AsString(this byte[] source, Dictionary<string, string> variables = null)
         {
             // first, trim off the byte order marker if it's present
 
             var bytes = source[0] == byteOrderMarker[0] && source[1] == byteOrderMarker[1] && source[2] == byteOrderMarker[2] ? source.Skip(3).ToArray() : source;
+            var text = System.Text.Encoding.UTF8.GetString(bytes);
 
-            return System.Text.Encoding.UTF8.GetString(bytes);
+            if (!variables?.Any() ?? true) return text;
+
+            foreach (var variable in variables ?? new Dictionary<string, string>())
+            {
+                // if we have a variable value that matches a key, skip it
+                // to make sure we don't loop infinitely.
+
+                if (variables.ContainsKey(variable.Value)) continue;
+
+                text = text.Replace($"{{{{ {variable.Key} }}}}", variable.Value);
+            }
+
+            return text;
         }
 
         internal static Dictionary<string, string> AddRange(this Dictionary<string, string> source, Dictionary<string, string> supplementalDictionary)

@@ -21,8 +21,15 @@ namespace LightPath.Bank
                 SetUrl();
             }
         }
+        /// <summary>
+        /// Key/Value pairs of attributes to be added to the emitted tag.
+        /// </summary>
         public Dictionary<string, string> Attributes { get; } = new();
         public byte[] Contents => (Exceptions?.Any() ?? false) ? null : BankHelpers.GetEmbeddedBytes(Assembly, NameSpace, FileName);
+        /// <summary>
+        /// Key/Value pairs of placeholder variables to be injected in text-based resources.
+        /// </summary>
+        public Dictionary<string, string> Variables { get; } = new();
 
         public string ContentType { get; set; }
         public List<Exception> Exceptions

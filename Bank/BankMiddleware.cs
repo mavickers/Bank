@@ -43,7 +43,8 @@ namespace LightPath.Bank
             {
                 context.Response.ContentType = resource.ContentType;
                 context.Response.StatusCode = 200;
-                await context.Response.WriteAsync(resource.Contents);
+
+                await (BankHelpers.IsTextType(resource) ? context.Response.WriteAsync(resource.Contents.AsString(resource.Variables)) : context.Response.WriteAsync(resource.Contents));
             }
         }
 

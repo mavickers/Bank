@@ -17,7 +17,7 @@ namespace LightPath.Bank
         private static Dictionary<string, string> ReservedCssAttributes => new() { { "href", "#" }, { "rel", "stylesheet" } };
         private static Dictionary<string, string> ReservedImageAttributes => new() { { "src", "#" } };
         private static Dictionary<string, string> ReservedScriptAttributes => new() { { "src", "#" } };
-
+        public static bool IsTextType(BankEmbeddedResource resource) => SupportedCssContentTypes.Contains(resource.ContentType) || SupportedScriptContentTypes.Contains(resource.ContentType);
 
         private static Dictionary<string, string> ConvertObjectToDictionary(object @object)
         {
@@ -57,6 +57,8 @@ namespace LightPath.Bank
 
             return output;
         }
+
+        public static string GetEmbeddedString(BankEmbeddedResource resource) => GetEmbeddedString(resource.Assembly, resource.NameSpace, resource.FileName);
 
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey) => RenderEmbeddedResource(htmlHelper, resourceKey, false);
 
