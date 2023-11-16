@@ -1,0 +1,1 @@
+﻿console.log('Hello, I\'m also in the console and I have this injected value: {{ injected }}');

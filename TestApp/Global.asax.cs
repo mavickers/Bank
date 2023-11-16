@@ -24,7 +24,7 @@ namespace TestApp
                 Attributes = { { "style", "height:50px" }, { "class", "doNothing" } }
             };
 
-            var scriptResource = new BankEmbeddedResource
+            var scriptResource1 = new BankEmbeddedResource
             {
                 Assembly = Assembly.GetExecutingAssembly(),
                 NameSpace = "Scripts",
@@ -33,8 +33,18 @@ namespace TestApp
                 ContentType = "application/javascript"
             };
 
+            var scriptResource2 = new BankEmbeddedResource
+            {
+                Assembly = Assembly.GetExecutingAssembly(),
+                NameSpace = "Scripts",
+                FileName = "HelloInjected.js",
+                ContentType = "application/javascript",
+                Variables = { { "injected", "THIS IS A TEST OF THE EMERGENCY BROADCAST SYSTEM" } }
+            };
+
             BankAssets.Register("asp-net-logo", imageResource);
-            BankAssets.Register("hello-world-script", scriptResource);
+            BankAssets.Register("hello-world-script", scriptResource1);
+            BankAssets.Register("hello-injected-script", scriptResource2);
         }
     }
 }
