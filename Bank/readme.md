@@ -55,7 +55,8 @@ Each embedded resource that needs to be served should be registered with Bank. T
         NameSpace = "Scripts",
         FileName = "HelloWorld.js",
         FacadeFileName = "GoodbyeWorld.js",
-        ContentType = "application/javascript"
+        ContentType = "application/javascript",
+        Variables = new { { "injected", "World!" } }
     };
 
     BankAssets.Register("hello-world-script", scriptResource);
@@ -70,8 +71,13 @@ There are two steps for registration:
     Optional properties include:
     
     * FacadeFileName. In the above example the resource has the filename "HelloWorld.js", but will be served when the app receives a request for "GoodbyeWorld.js". If this value is not set, the FileName property will be used for requests for the resource.
+    * Variables. This is a key/value pair dictionary that facilitates injection of server-side variable values into a text-based resource using placeholders containing the key names in the resource. The placeholders should follow the {{ key_name }} convention in the resource content.
 
-* * **Register the resource.** This is done by calling BankAssets.Register and passing in the new BankEmbeddedResource instance. In the example above the Register method is called with an additional key name as the first parameter, but it can be called with just the embedded resource parameter. In the latter case a unique key name will be assigned to the resource in the BankAssets resource dictionary.
+      For example, to inject the string "World" using a placeholder named "injected", the Variables dictionary on the resource must contain a key/value pair of "injected", "World!", and the contents of the resource itself must contain one or more instances of {{ injected }}. If the resource is a script and contains the line `alert('Hello {{ injected }}')` then the browser will present an alert with the text "Hello World!" when loaded with this resource.
+
+      An example of this is in the test app - locate references for HelloInjected.js.
+
+* **Register the resource.** This is done by calling BankAssets.Register and passing in the new BankEmbeddedResource instance. In the example above the Register method is called with an additional key name as the first parameter, but it can be called with just the embedded resource parameter. In the latter case a unique key name will be assigned to the resource in the BankAssets resource dictionary.
 
   The key name can be used to retrieve or reference the resource later. It is recommended to assign a friendly key name but not necessary.
 
