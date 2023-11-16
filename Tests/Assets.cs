@@ -12,8 +12,11 @@ namespace Tests
         private readonly BankEmbeddedResource style1;
         private readonly BankEmbeddedResource script1;
         private readonly BankEmbeddedResource script2;
+        private readonly BankEmbeddedResource script3;
         private readonly string script1Rendered = "<script src=\"/prepend/Tests/TestAssets/HelloWorld.js\"></script>";
         private readonly string script2Rendered = "<script src=\"/prepend/Tests/TestAssets/HelloWorld.js\" defer class=\"testing\"></script>";
+        private readonly string script3Rendered = "<script src=\"/prepend/Tests/TestAssets/HelloVariable.js\" defer class=\"testing\"></script>";
+        private readonly string script3Contents = "alert('Hello World!');";
         private readonly string style1Contents = ".HelloWorld { font-weight: 900 }";
         private readonly string style1Rendered = "<link href=\"/Tests/TestAssets/HelloWorld.css\" rel=\"stylesheet\">";
 
@@ -43,6 +46,16 @@ namespace Tests
                 UrlRenderPrepend = "/prepend",
                 Attributes = { { "defer", string.Empty }, { "class", "testing" } }
             };
+            script3 = new BankEmbeddedResource
+            {
+                Assembly = Assembly.GetExecutingAssembly(),
+                NameSpace = "TestAssets",
+                FileName = "HelloVariable.js",
+                ContentType = "application/javascript",
+                UrlRenderPrepend = "/prepend",
+                Attributes = { { "defer", string.Empty }, { "class", "testing" } },
+                Variables = { { "injected", "Hello World!" } }
+            };
         }
 
         [Fact]
@@ -61,13 +74,17 @@ namespace Tests
             var htmlHelper = CreateHtmlHelper(new ViewDataDictionary());
             var html1 = htmlHelper.RenderEmbeddedResource(script1);
             var html2 = htmlHelper.RenderEmbeddedResource(script2);
-            var html3 = htmlHelper.RenderEmbeddedResource(style1);
-            var html3Content = style1.Contents.AsString();
+            var html3 = htmlHelper.RenderEmbeddedResource(script3);
+            var html3Content = script3.Contents.AsString(script3.Variables);
+            var html4 = htmlHelper.RenderEmbeddedResource(style1);
+            var html4Content = style1.Contents.AsString();
 
             Assert.Equal(script1Rendered, html1.ToString());
             Assert.Equal(script2Rendered, html2.ToString());
-            Assert.Equal(style1Rendered, html3.ToString());
-            Assert.Equal(style1Contents, html3Content);
+            Assert.Equal(script3Rendered, html3.ToString());
+            Assert.Equal(script3Contents, html3Content);
+            Assert.Equal(style1Rendered, html4.ToString());
+            Assert.Equal(style1Contents, html4Content);
         }
 
         private static HtmlHelper CreateHtmlHelper(ViewDataDictionary viewData)
