@@ -60,6 +60,8 @@ namespace LightPath.Bank
 
         public static string GetEmbeddedString(BankEmbeddedResource resource) => GetEmbeddedString(resource.Assembly, resource.NameSpace, resource.FileName);
 
+        public static Stream Open(BankEmbeddedResource resource) => resource.Assembly.GetManifestResourceStream($"{resource.Assembly.GetName().Name}.{resource.NameSpace}.{resource.FileName}");
+
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey) => RenderEmbeddedResource(htmlHelper, resourceKey, false);
 
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey, dynamic helperAttributes = null) => RenderEmbeddedResource(htmlHelper, resourceKey, false, helperAttributes);

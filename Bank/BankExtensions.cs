@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Web.Optimization;
 
 namespace LightPath.Bank
 {
@@ -46,6 +47,8 @@ namespace LightPath.Bank
 
             return source;
         }
+
+        public static Bundle Include(this Bundle bundle, BankEmbeddedResource resource) => bundle.Include(resource.VirtualPath);
 
         internal static Dictionary<string, string> SetOrAdd(this Dictionary<string, string> source, string key, string value)
         {

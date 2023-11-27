@@ -197,6 +197,10 @@
       <Project>{4f8366e5-74fb-46cb-8580-85479a7d2cda}</Project>
       <Name>Bank</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TestApp.Library\TestApp.Library.csproj">
+      <Project>{0ef05806-fdd7-4fe6-9539-d26596543bd8}</Project>
+      <Name>TestApp.Library</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -216,7 +220,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>50753</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:44337/</IISUrl>
+          <IISUrl>http://localhost:44338/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

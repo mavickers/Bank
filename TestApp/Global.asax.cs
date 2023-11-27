@@ -1,5 +1,6 @@
 ﻿using LightPath.Bank;
 using System.Reflection;
+using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -42,9 +43,24 @@ namespace TestApp
                 Variables = { { "injected", "THIS IS A TEST OF THE EMERGENCY BROADCAST SYSTEM" } }
             };
 
+            var scriptResource3 = new BankEmbeddedResource
+            {
+                Assembly = Assembly.GetAssembly(typeof(TestApp.Library.Constants)),
+                NameSpace = "Scripts",
+                FileName = "HelloWorldBundled.js",
+                FacadeFileName = "HelloWorldBundledScript.js",
+                ContentType = "application/javascript"
+            };
+
             BankAssets.Register("asp-net-logo", imageResource);
             BankAssets.Register("hello-world-script", scriptResource1);
             BankAssets.Register("hello-injected-script", scriptResource2);
+            BankAssets.Register("hello-world-script-bundled", scriptResource3);
+
+            HostingEnvironment.RegisterVirtualPathProvider(BankAssets.VirtualPathProvider);
+            BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
+            BundleTable.EnableOptimizations = true;
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/hello-world").Include(BankAssets.GetByKey("hello-world-script-bundled")));
         }
     }
 }

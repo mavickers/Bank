@@ -1,0 +1,6 @@
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\bin\Release\TestApp.Library.dll
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\bin\Release\TestApp.Library.pdb
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\obj\Release\TestApp.Library.csproj.AssemblyReference.cache
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\obj\Release\TestApp.Library.csproj.CoreCompileInputs.cache
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\obj\Release\TestApp.Library.dll
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\obj\Release\TestApp.Library.pdb

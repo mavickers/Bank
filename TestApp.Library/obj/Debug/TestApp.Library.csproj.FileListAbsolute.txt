@@ -1,0 +1,12 @@
+P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\bin\Debug\TestApp.Library.dll
+P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\bin\Debug\TestApp.Library.pdb
+P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\obj\Debug\TestApp.Library.csproj.AssemblyReference.cache
+P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\obj\Debug\TestApp.Library.csproj.CoreCompileInputs.cache
+P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\obj\Debug\TestApp.Library.dll
+P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\obj\Debug\TestApp.Library.pdb
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\bin\Debug\TestApp.Library.dll
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\bin\Debug\TestApp.Library.pdb
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\obj\Debug\TestApp.Library.csproj.AssemblyReference.cache
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\obj\Debug\TestApp.Library.csproj.CoreCompileInputs.cache
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\obj\Debug\TestApp.Library.dll
+P:\LightPath\Projects\Bank\repo\working\TestApp.Library\obj\Debug\TestApp.Library.pdb

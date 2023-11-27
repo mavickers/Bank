@@ -18,7 +18,7 @@ namespace LightPath.Bank
             set
             {
                 _assembly = value;
-                SetUrl();
+                SetLocation();
             }
         }
         /// <summary>
@@ -52,7 +52,7 @@ namespace LightPath.Bank
             set
             {
                 _facadeFileName = value;
-                SetUrl();
+                SetLocation();
             }
         }
         public string FileName
@@ -61,7 +61,7 @@ namespace LightPath.Bank
             set
             {
                 _fileName = value;
-                SetUrl();
+                SetLocation();
             }
         }
         public string NameSpace
@@ -70,10 +70,11 @@ namespace LightPath.Bank
             set
             {
                 _nameSpace = value;
-                SetUrl();
+                SetLocation();
             }
         }
         public string Url { get; private set; }
+        public string VirtualPath { get; private set; }
 
         /// <summary>
         /// Value with which to prepend the Url when using RenderEmbeddedResource
@@ -87,7 +88,7 @@ namespace LightPath.Bank
         /// We want to set Url on property sets rather than compute it on a
         /// getter as the Url is used in request path comparisons in the middleware.
         /// </remarks>
-        private void SetUrl()
+        private void SetLocation()
         {
             if (Assembly == null || string.IsNullOrWhiteSpace(NameSpace))
             {
@@ -99,6 +100,7 @@ namespace LightPath.Bank
             var fileName = string.IsNullOrWhiteSpace(_facadeFileName) ? _fileName : _facadeFileName;
 
             Url = string.IsNullOrWhiteSpace(fileName) ? string.Empty : $"/{Assembly.GetName().Name}/{NameSpace}/{fileName}".Replace("//", "/");
+            VirtualPath = $"~{Url}";
         }
     }
 }

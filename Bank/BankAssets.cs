@@ -7,16 +7,21 @@ namespace LightPath.Bank
 {
     public static class BankAssets
     {
-        public static IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
         private static readonly Dictionary<string, BankEmbeddedResource> _cache = new();
+
+        public static IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
 
         public static bool ContainsKey(string key) => _cache.ContainsKey(key);
 
         public static bool ContainsUrl(string url) => GetByUrl(url) != null;
 
+        public static bool ContainsVirtualPath(string virtualPath) => GetByVirtualPath(virtualPath) != null;
+
         public static BankEmbeddedResource GetByKey(string key) => _cache.ContainsKey(key) ? _cache[key] : null;
 
         public static BankEmbeddedResource GetByUrl(string url) => _cache.FirstOrDefault(res => string.Equals(res.Value.Url, url, StringComparison.CurrentCultureIgnoreCase)).Value;
+
+        public static BankEmbeddedResource GetByVirtualPath(string virtualPath) => _cache.FirstOrDefault(res => string.Equals(res.Value.VirtualPath, virtualPath, StringComparison.CurrentCultureIgnoreCase)).Value;
 
         public static void Register(BankEmbeddedResource resource) => Register($"EmbeddedResource-({resource.Url})", resource);
 
@@ -43,5 +48,7 @@ namespace LightPath.Bank
                 return _cache.Remove(key);
             }
         }
+
+        public static BankVirtualPathProvider VirtualPathProvider = new();
     }
 }

@@ -9,3 +9,5 @@ packages/
 *.user
 
 Bank/Properties/PublishProfiles/
+
+*.cache
