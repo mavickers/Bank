@@ -55,8 +55,7 @@ namespace LightPath.Bank
             if (source == null) return source;
             if (string.IsNullOrWhiteSpace(key)) return source;
             
-            if (source.ContainsKey(key)) source[key] = value;
-            else source.Add(key, value);
+            source[key] = value;
 
             return source;
         }

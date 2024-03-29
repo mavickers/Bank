@@ -35,7 +35,16 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Compile Remove="TestAssets\Resolvers.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <None Remove="TestAssets\HelloVariable.js" />
+      <None Remove="TestAssets\UrlTest.css" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="Resolvers.cs" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LightPath.Bank.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -11,6 +12,9 @@ namespace LightPath.Bank
         private string _facadeFileName;
         private string _fileName;
         private string _nameSpace;
+        private string _urlPrepend;
+        private byte[] _contents;
+        
 
         public Assembly Assembly
         {
@@ -25,12 +29,35 @@ namespace LightPath.Bank
         /// Key/Value pairs of attributes to be added to the emitted tag.
         /// </summary>
         public Dictionary<string, string> Attributes { get; } = new();
-        public byte[] Contents => (Exceptions?.Any() ?? false) ? null : BankHelpers.GetEmbeddedBytes(Assembly, NameSpace, FileName);
+        public List<IBankAssetContentProcessor> ContentProcessors;
+        public byte[] Contents
+        {
+            get
+            {
+                if (Exceptions?.Any() ?? false) return null;
+                if (_contents != null) return _contents;
+
+                var contents = BankHelpers.GetEmbeddedBytes(this);
+
+                if (!ContentProcessors?.Any() ?? true)
+                {
+                    _contents = contents;
+
+                    return _contents;
+                }
+
+                _contents = ContentProcessors.Aggregate(contents, (current, processor) => processor.Process(current));
+
+                return _contents;
+            }
+        }
+
         /// <summary>
         /// Key/Value pairs of placeholder variables to be injected in text-based resources.
         /// </summary>
         public Dictionary<string, string> Variables { get; } = new();
 
+        public string BaseUrl { get; private set; }
         public string ContentType { get; set; }
         public List<Exception> Exceptions
         {
@@ -79,7 +106,15 @@ namespace LightPath.Bank
         /// <summary>
         /// Value with which to prepend the Url when using RenderEmbeddedResource
         /// </summary>
-        public string UrlRenderPrepend { get; set; }
+        public string UrlPrepend
+        {
+            get => _urlPrepend;
+            set
+            {
+                _urlPrepend = value;
+                SetLocation();
+            }
+        }
 
         /// <summary>
         /// Set the Url property based on the value of the other properties
@@ -98,9 +133,12 @@ namespace LightPath.Bank
             }
 
             var fileName = string.IsNullOrWhiteSpace(_facadeFileName) ? _fileName : _facadeFileName;
+            var prepend = string.IsNullOrWhiteSpace(UrlPrepend) ? string.Empty : UrlPrepend;
+            var baseUrl = string.IsNullOrWhiteSpace(fileName) ? string.Empty : $"{Assembly.GetName().Name}/{NameSpace}/{fileName}".Replace("//", "/");
 
-            Url = string.IsNullOrWhiteSpace(fileName) ? string.Empty : $"/{Assembly.GetName().Name}/{NameSpace}/{fileName}".Replace("//", "/");
-            VirtualPath = $"~{Url}";
+            BaseUrl = $"/{baseUrl}";
+            Url = $"{prepend}/{baseUrl}";
+            VirtualPath = $"~/{baseUrl}";
         }
     }
 }
