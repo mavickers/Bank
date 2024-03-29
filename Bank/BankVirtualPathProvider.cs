@@ -28,7 +28,17 @@ namespace LightPath.Bank
 
         private bool FileExistsInBank(string locator)
         {
-            return BankAssets.ContainsKey(locator) || BankAssets.ContainsUrl(locator) || BankAssets.ContainsVirtualPath(locator);
+            return BankAssets.ContainsKey(locator) || BankAssets.ContainsUrl(locator) || BankAssets.ContainsVirtualPath(locator) || BankAssets.ContainsByResolver(locator);
+        }
+
+        private bool FileExistsInBank(string locator, out BankEmbeddedResource result)
+        {
+            if (BankAssets.TryGetByKey(locator, out result)) return true;
+            if (BankAssets.TryGetByUrl(locator, out result)) return true;
+            if (BankAssets.TryGetByVirtualPath(locator, out result)) return true;
+            if (BankAssets.TryGetByResolver(locator, out result)) return true;
+
+            return false;
         }
 
         /// <summary>
@@ -38,14 +48,17 @@ namespace LightPath.Bank
         /// <returns></returns>
         public override VirtualFile GetFile(string locator)
         {
-            return FileExistsInBank(locator)
-                   ? new BankEmbeddedVirtualFile(BankAssets.GetByKey(locator) ?? BankAssets.GetByUrl(locator) ?? BankAssets.GetByVirtualPath(locator))
-                   : base.GetFile(locator);
+            return FileExistsInBank(locator, out var result) ? new BankEmbeddedVirtualFile(result) : base.GetFile(locator);
         }
 
-        public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
+        public override CacheDependency GetCacheDependency(string locator, IEnumerable virtualPathDependencies, DateTime utcStart)
         {
-            return FileExistsInBank(virtualPath) ? base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart) : null;
+            // we are shimming around requests for bundles; if a bundle request fall through
+            // to Previous.GetCacheDependency it is throwing an error.
+
+            if (FileExistsInBank(locator) || locator.StartsWith("~/bundles", StringComparison.InvariantCultureIgnoreCase)) return null;
+            
+            return Previous.GetCacheDependency(locator, virtualPathDependencies, utcStart);
         }
     }
 }

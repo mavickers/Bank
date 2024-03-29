@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Resources;
 using System.Web.Mvc;
 
 namespace LightPath.Bank
 {
-    public static class BankHelpers
+    public static partial class BankHelpers
     {
         private static readonly List<string> UnclosedTags = new() { "link" };
         private static readonly List<string> SelfClosingTags = new() { "img" };
@@ -24,7 +25,7 @@ namespace LightPath.Bank
             if (@object == null) return new Dictionary<string, string>();
 
             var props = @object.GetType().GetProperties();
-            
+
             return props.ToDictionary(x => ConvertCamelCaseToDashed(x.Name), x => x.GetValue(@object, null)?.ToString());
         }
 
@@ -33,13 +34,15 @@ namespace LightPath.Bank
             return string.Concat(source.Select((x, i) => i > 0 && char.IsUpper(x) ? $"-{x}" : x.ToString())).ToLower();
         }
 
+        public static byte[] GetEmbeddedBytes(BankEmbeddedResource resource) => GetEmbeddedBytes(resource.Assembly, resource.NameSpace, resource.FileName);
+
         public static byte[] GetEmbeddedBytes(Assembly assembly, string nameSpace, string fileName)
         {
             using var resourceStream = assembly.GetManifestResourceStream($"{assembly.GetName().Name}.{nameSpace}.{fileName}");
             using var memoryStream = resourceStream == null ? null : new MemoryStream();
-            
+
             resourceStream?.CopyTo(memoryStream);
-            
+
             var output = memoryStream?.ToArray();
 
             resourceStream?.Dispose();
@@ -60,9 +63,10 @@ namespace LightPath.Bank
 
         public static string GetEmbeddedString(BankEmbeddedResource resource) => GetEmbeddedString(resource.Assembly, resource.NameSpace, resource.FileName);
 
-        public static Stream Open(BankEmbeddedResource resource) => resource.Assembly.GetManifestResourceStream($"{resource.Assembly.GetName().Name}.{resource.NameSpace}.{resource.FileName}");
+        //public static Stream Open(BankEmbeddedResource resource) => resource.Assembly.GetManifestResourceStream($"{resource.Assembly.GetName().Name}.{resource.NameSpace}.{resource.FileName}");
+        public static Stream Open(BankEmbeddedResource resource) => new MemoryStream(resource.Contents);
 
-        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey) => RenderEmbeddedResource(htmlHelper, resourceKey, false);
+        public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey) => htmlHelper.RenderEmbeddedResource(resourceKey, false);
 
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey, dynamic helperAttributes = null) => RenderEmbeddedResource(htmlHelper, resourceKey, false, helperAttributes);
 
@@ -87,16 +91,16 @@ namespace LightPath.Bank
 
         private static MvcHtmlString RenderEmbeddedResource
         (
-            BankEmbeddedResource resource, 
-            string tag, 
-            string urlAttribute, 
-            Dictionary<string, string> reservedAttributes = null, 
-            bool withCacheBuster = false, 
+            BankEmbeddedResource resource,
+            string tag,
+            string urlAttribute,
+            Dictionary<string, string> reservedAttributes = null,
+            bool withCacheBuster = false,
             dynamic helperAttributes = null
         )
         {
             if (resource == null) throw new ArgumentNullException(nameof(resource));
-            
+
             // concat the attributes for rendering into a new dictionary; we don't actually
             // want to add the attributes passed in from the render call to the embedded resource.
             // we also want to camelcase -> dashed conversion of the keys along the way
@@ -105,7 +109,7 @@ namespace LightPath.Bank
 
             var attributesToRender = (reservedAttributes ?? new Dictionary<string, string>())
                                       .AddRange(ConvertObjectToDictionary(helperAttributes) as Dictionary<string, string> ?? new Dictionary<string, string>())
-                                      .SetOrAdd(urlAttribute, $"{(string.IsNullOrWhiteSpace(resource.UrlRenderPrepend) ? string.Empty : resource.UrlRenderPrepend)}{resource.Url}{(withCacheBuster ? $"?{DateTime.Now.Ticks}" : string.Empty)}");
+                                      .SetOrAdd(urlAttribute, $"{resource.Url}{(withCacheBuster ? $"?{DateTime.Now.Ticks}" : string.Empty)}");
 
             foreach (var attr in resource.Attributes)
             {

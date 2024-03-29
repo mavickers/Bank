@@ -9,54 +9,48 @@ namespace Tests
 {
     public class Assets
     {
-        private readonly BankEmbeddedResource style1;
-        private readonly BankEmbeddedResource script1;
-        private readonly BankEmbeddedResource script2;
-        private readonly BankEmbeddedResource script3;
+        private readonly BankEmbeddedResource style1 = new()
+        {
+            Assembly = Assembly.GetExecutingAssembly(),
+            NameSpace = "TestAssets",
+            FileName = "HelloWorld.css",
+            ContentType = "text/css"
+        };
+        private readonly BankEmbeddedResource script1 = new()
+        {
+            Assembly = Assembly.GetExecutingAssembly(),
+            NameSpace = "TestAssets",
+            FileName = "HelloWorld.js",
+            ContentType = "application/javascript",
+            UrlPrepend = "/prepend"
+        };
+        private readonly BankEmbeddedResource script2 = new()
+        {
+            Assembly = Assembly.GetExecutingAssembly(),
+            NameSpace = "TestAssets",
+            FileName = "HelloWorld.js",
+            ContentType = "application/javascript",
+            UrlPrepend = "/prepend",
+            Attributes = { { "defer", string.Empty }, { "class", "testing" } }
+        };
+        private readonly BankEmbeddedResource script3 = new()
+        {
+            Assembly = Assembly.GetExecutingAssembly(),
+            NameSpace = "TestAssets",
+            FileName = "HelloVariable.js",
+            ContentType = "application/javascript",
+            UrlPrepend = "/prepend",
+            Attributes = { { "defer", string.Empty }, { "class", "testing" } },
+            Variables = { { "injected", "Hello World!" } }
+        };
+
+
         private readonly string script1Rendered = "<script src=\"/prepend/Tests/TestAssets/HelloWorld.js\"></script>";
         private readonly string script2Rendered = "<script src=\"/prepend/Tests/TestAssets/HelloWorld.js\" defer class=\"testing\"></script>";
         private readonly string script3Rendered = "<script src=\"/prepend/Tests/TestAssets/HelloVariable.js\" defer class=\"testing\"></script>";
         private readonly string script3Contents = "alert('Hello World!');";
         private readonly string style1Contents = ".HelloWorld { font-weight: 900 }";
         private readonly string style1Rendered = "<link href=\"/Tests/TestAssets/HelloWorld.css\" rel=\"stylesheet\">";
-
-        public Assets()
-        {
-            style1 = new BankEmbeddedResource
-            {
-                Assembly = Assembly.GetExecutingAssembly(),
-                NameSpace = "TestAssets",
-                FileName = "HelloWorld.css",
-                ContentType = "text/css"
-            };
-            script1 = new BankEmbeddedResource
-            {
-                Assembly = Assembly.GetExecutingAssembly(),
-                NameSpace = "TestAssets",
-                FileName = "HelloWorld.js",
-                ContentType = "application/javascript",
-                UrlRenderPrepend = "/prepend"
-            };
-            script2 = new BankEmbeddedResource
-            {
-                Assembly = Assembly.GetExecutingAssembly(),
-                NameSpace = "TestAssets",
-                FileName = "HelloWorld.js",
-                ContentType = "application/javascript",
-                UrlRenderPrepend = "/prepend",
-                Attributes = { { "defer", string.Empty }, { "class", "testing" } }
-            };
-            script3 = new BankEmbeddedResource
-            {
-                Assembly = Assembly.GetExecutingAssembly(),
-                NameSpace = "TestAssets",
-                FileName = "HelloVariable.js",
-                ContentType = "application/javascript",
-                UrlRenderPrepend = "/prepend",
-                Attributes = { { "defer", string.Empty }, { "class", "testing" } },
-                Variables = { { "injected", "Hello World!" } }
-            };
-        }
 
         [Fact]
         public void Register()
