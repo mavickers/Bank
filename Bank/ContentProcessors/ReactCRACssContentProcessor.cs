@@ -14,6 +14,7 @@ namespace LightPath.Bank.ContentProcessors
         private readonly Assembly _assembly;
         private readonly string _nameSpace;
         private readonly string _prepend;
+        private static readonly string[] exclusions = new string[] { "http:", "https://" };
 
         public ReactCRACssContentProcessor(Assembly assembly, string nameSpace, string prepend = null)
         {
@@ -40,6 +41,7 @@ namespace LightPath.Bank.ContentProcessors
             for (var i = 0; i < urlMatches.Count; i++)
             {
                 if (urls.Keys.Contains(urlMatches[i].Value)) continue;
+                if (exclusions.Any(exc => urlMatches[i].Value.ToLower().Contains(exc))) continue;
 
                 var replacement = urlMatches[i].Value.Replace("\"", string.Empty);
                 var filePath = replacement.Split('(', ')')[1].Split('/');
