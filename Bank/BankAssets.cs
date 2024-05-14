@@ -19,7 +19,6 @@ namespace LightPath.Bank
             public static bool ThrowOnDuplicate = true;
         }
 
-
         public static void Clear() => _cache.Clear();
 
         public static bool Contains(BankEmbeddedResource resource) => _cache.ContainsValue(resource);
