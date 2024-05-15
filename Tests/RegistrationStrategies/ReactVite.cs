@@ -5,15 +5,16 @@ namespace Tests.RegistrationStrategies
 {
     public class ReactVite
     {
+        private readonly string htmlContent = "<html>hello, world</html>";
+        private readonly string jsContent = "(function () { console.log('hello, world'); } ())";
+        private readonly string cssContentA = ".hello-world-a { }";
+        private readonly string cssContentB = ".hello-world-b { background: url(/Tests/StrategyTestAssets.ReactVite/'vite.svg') }";
+
         [Fact]
         public void Basic()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var assets = new LightPath.Bank.RegistrationStrategies.ReactViteStrategy(assembly, "StrategyTestAssets.ReactVite");
-            var htmlContent = "<html>hello, world</html>";
-            var jsContent = "(function () { console.log('hello, world'); } ())";
-            var cssContentA = ".hello-world-a { }";
-            var cssContentB = ".hello-world-b { background: url(/Tests/StrategyTestAssets.ReactVite/'vite.svg') }";
 
             BankAssets.Register(assets);
 

@@ -52,15 +52,17 @@ namespace LightPath.Bank.RegistrationStrategies
 
             if (manifestJson == null) return false;
 
+            _manifestJson = manifestJson;
+
             foreach (var entry in manifestJson)
             {
                 // first parse out entry properties
 
-
                 var files = new List<string>();
                 var entryConfig = entry.Value;
                 var entryName = (string)entryConfig.Name;
-                var entryCss = ((object[])entryConfig.css).Select(obj => (string)obj).ToArray();
+                var entryCss = ((object[])entryConfig?.css ?? new object[] { }).Select(obj => (string)obj).ToArray();
+                var entryAssets = ((object[])entryConfig?.assets ?? new object[] { }).Select(obj => (string)obj).ToArray();
 
                 // add the entry filename... are going to use the file specified as the entry key.
 
@@ -80,9 +82,16 @@ namespace LightPath.Bank.RegistrationStrategies
 
                 foreach (var cssFile in entryCss)
                 {
-                    var cssFileExtensions = cssFile.Split('.').Last().ToLower();
+                    var cssFileExtension = cssFile.Split('.').Last().ToLower();
 
-                    if (!_exclusions.Contains(cssFileExtensions)) files.Add(cssFile);
+                    if (!_exclusions.Contains(cssFileExtension)) files.Add(cssFile);
+                }
+
+                foreach (var assetFile in entryAssets)
+                {
+                    var cssFileExtension = assetFile.Split('.').Last().ToLower();
+
+                    if (!_exclusions.Contains(cssFileExtension)) files.Add(assetFile);
                 }
 
                 // iterate through the built file list and create/add the resource
