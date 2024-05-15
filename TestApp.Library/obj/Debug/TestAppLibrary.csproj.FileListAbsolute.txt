@@ -1,6 +1,0 @@
-P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\bin\Debug\TestAppLibrary.dll
-P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\bin\Debug\TestAppLibrary.pdb
-P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\obj\Debug\TestAppLibrary.csproj.AssemblyReference.cache
-P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\obj\Debug\TestAppLibrary.csproj.CoreCompileInputs.cache
-P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\obj\Debug\TestAppLibrary.dll
-P:\LightPath\Projects\Bank\repo\working\TestAppLibrary\obj\Debug\TestAppLibrary.pdb

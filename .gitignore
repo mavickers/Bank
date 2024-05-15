@@ -5,6 +5,8 @@ Tests/bin/
 Tests/obj/
 TestApp/bin/
 TestApp/obj/
+TestApp.Library/bin/
+TestApp.Library/obj/
 packages/
 *.user
 
