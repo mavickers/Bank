@@ -17,6 +17,7 @@ namespace LightPath.Bank
             { "bz2", "application/x-bzip2" },
             { "cda", "application/x-cdf" },
             { "csh", "application/x-csh" },
+            { "cshtml", "text/plain" },
             { "css", "text/css" },
             { "csv", "text/csv" },
             { "doc", "application/msword" },
