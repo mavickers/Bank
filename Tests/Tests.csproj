@@ -32,6 +32,7 @@
 
     <ItemGroup>
         <EmbeddedResource Include="TestAssets\**" />
+        <EmbeddedResource Include="StrategyTestAssets\ReactVite\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -39,8 +40,13 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="StrategyTestAssets\ReactVite\assets\vite.svg" />
       <None Remove="TestAssets\HelloVariable.js" />
       <None Remove="TestAssets\UrlTest.css" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="StrategyTestAssets\ReactVite\.vite\manifest.json" />
     </ItemGroup>
 
     <ItemGroup>
