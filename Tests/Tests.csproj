@@ -40,17 +40,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="StrategyTestAssets\ReactVite\assets\vite.svg" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\node_modules\index-prod.html" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\assets\vite.svg" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\style-2.css" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\style-3.css" />
       <None Remove="TestAssets\HelloVariable.js" />
       <None Remove="TestAssets\UrlTest.css" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="StrategyTestAssets\ReactVite\.vite\manifest.json" />
     </ItemGroup>
 
     <ItemGroup>
