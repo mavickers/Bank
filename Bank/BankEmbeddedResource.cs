@@ -1,6 +1,7 @@
 ﻿using LightPath.Bank.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Reflection;
 
@@ -8,10 +9,12 @@ namespace LightPath.Bank
 {
     public class BankEmbeddedResource
     {
+        private Guid _instanceId = Guid.NewGuid();
         private Assembly _assembly;
         private string _facadeFileName;
         private string _fileName;
         private string _nameSpace;
+        private string _resourceKey;
         private string _urlPrepend;
         private byte[] _contents;
         
@@ -99,6 +102,12 @@ namespace LightPath.Bank
                 _nameSpace = value;
                 SetLocation();
             }
+        }
+
+        public string ResourceKey
+        {
+            get => string.IsNullOrWhiteSpace(_resourceKey) ? $"EmbeddedResource-{_instanceId}-({Url})" : _resourceKey;
+            set => _resourceKey = string.IsNullOrWhiteSpace(value.Trim()) ? null : BankAssets.All.All(asset => asset.Value.ResourceKey != value) ? value : throw new Exception("Resource key already exists in BankAssets");
         }
         public string Url { get; private set; }
         public string VirtualPath { get; private set; }

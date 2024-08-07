@@ -1,14 +1,15 @@
-﻿using System;
+﻿using LightPath.Bank.ContentProcessors;
+using LightPath.Bank.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using LightPath.Bank.ContentProcessors;
-using LightPath.Bank.Interfaces;
 
 namespace LightPath.Bank.RegistrationStrategies;
 
+[Obsolete("No longer supported - use ViteReactLib strategy")]
 public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
 {
     private readonly List<string> _exclusions = new();

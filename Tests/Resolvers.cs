@@ -47,7 +47,6 @@ namespace Tests
         public Resolvers()
         {
             BankAssets.Config.ThrowOnDuplicate = false;
-            BankAssets.Clear();
             BankAssets.Register("script-1", script1);
             BankAssets.Register("script-2", script2);
             BankAssets.RegisterResolver(typeof(TestResolver1));

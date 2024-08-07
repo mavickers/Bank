@@ -41,7 +41,9 @@
 
     <ItemGroup>
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\node_modules\index-prod.html" />
+      <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\assets\LSD-cat.png" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\assets\vite.svg" />
+      <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\Dependency.js" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\style-2.css" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\style-3.css" />
       <None Remove="TestAssets\HelloVariable.js" />

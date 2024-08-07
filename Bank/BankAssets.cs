@@ -66,11 +66,11 @@ namespace LightPath.Bank
 
         public static void Register(IBankAssetRegistrationStrategy strategy) => strategy.Register();
 
-        public static bool Register(BankEmbeddedResource resource) => Register($"EmbeddedResource-{Guid.NewGuid()}-({resource.Url})", resource);
+        public static bool Register(BankEmbeddedResource resource) => Register(resource.ResourceKey, resource);
 
         public static bool Register(string key, BankEmbeddedResource resource)
         {
-            var _key = string.IsNullOrWhiteSpace(key) ? $"EmbeddedResource-{Guid.NewGuid()}-({resource.Url})" : key;
+            var _key = !string.IsNullOrWhiteSpace(key) ? key : resource.ResourceKey;
 
             if (_cache.ContainsKey(_key) && Config.ThrowOnDuplicate) throw new Exception($"Asset with key {_key} is already registered");
             if (ContainsUrl(resource.Url) && Config.ThrowOnDuplicate) throw new Exception($"Embedded resource with url '${resource.Url}' is already registered");
