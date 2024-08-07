@@ -12,7 +12,7 @@ namespace Tests.RegistrationStrategies
             NameSpace = "TestAssets",
             FileName = "UrlTest.css",
             ContentType = "text/css",
-            ContentProcessors = new() { new ReactCRACssContentProcessor(Assembly.GetExecutingAssembly(), "TestAssets") }
+            ContentProcessors = new() { new ReactCssContentProcessor(Assembly.GetExecutingAssembly(), "TestAssets") }
         };
 
         private readonly string testStyleContents = ".UrlTest1 { background-image: url(/Tests/TestAssets.one.two.three/image.jgp); } .UrlTest2 { background-image: url(/Tests/TestAssets.four.five/image.jgp); }";

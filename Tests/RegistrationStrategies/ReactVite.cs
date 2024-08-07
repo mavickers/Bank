@@ -14,7 +14,7 @@ namespace Tests.RegistrationStrategies
         public void Basic()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var assets = new LightPath.Bank.RegistrationStrategies.ReactViteStrategy(assembly, "StrategyTestAssets.ReactVite");
+            var assets = new LightPath.Bank.RegistrationStrategies.ReactViteRegistrationStrategy(assembly, "StrategyTestAssets.ReactVite.ClientApp.dist");
 
             BankAssets.Register(assets);
 
