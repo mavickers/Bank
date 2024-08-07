@@ -1,0 +1,12 @@
+{
+  "src/main.jsx": {
+    "file": "react-vite-test.umd.cjs",
+    "name": "main",
+    "src": "src/main.jsx",
+    "isEntry": true
+  },
+  "style.css": {
+    "file": "style.css",
+    "src": "style.css"
+  }
+}
