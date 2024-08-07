@@ -9,14 +9,14 @@ namespace LightPath.Bank.ContentProcessors
     /// <summary>
     /// Adjust url refs in css so they reflect embedded namespacing.
     /// </summary>
-    public class ReactCRACssContentProcessor : IBankAssetContentProcessor
+    public class ReactCssContentProcessor : IBankAssetContentProcessor
     {
         private readonly Assembly _assembly;
         private readonly string _nameSpace;
         private readonly string _prepend;
         private static readonly string[] exclusions = new string[] { "http:", "https://" };
 
-        public ReactCRACssContentProcessor(Assembly assembly, string nameSpace, string prepend = null)
+        public ReactCssContentProcessor(Assembly assembly, string nameSpace, string prepend = null)
         {
             _assembly = assembly;
             _nameSpace = nameSpace;

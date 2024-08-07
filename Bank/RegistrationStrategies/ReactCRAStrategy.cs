@@ -71,7 +71,7 @@ namespace LightPath.Bank.RegistrationStrategies
                     FileName = filename,
                     ContentType = contentType,
                     UrlPrepend = UrlPrepend,
-                    ContentProcessors = filename.ToLower().EndsWith("css") ? new() { new ReactCRACssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null,
+                    ContentProcessors = filename.ToLower().EndsWith("css") ? new() { new ReactCssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null,
                 };
 
                 BankAssets.Register(resource);

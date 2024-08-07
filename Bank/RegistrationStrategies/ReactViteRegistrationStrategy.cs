@@ -111,7 +111,7 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
                     FileName = fileName,
                     ContentType = contentType,
                     UrlPrepend = UrlPrepend,
-                    ContentProcessors = fileExtension.EndsWith("css") ? new() { new ReactCRACssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null
+                    ContentProcessors = fileExtension.EndsWith("css") ? new() { new ReactCssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null
                 };
                 var resourceKeyFilename = fileExtension == "js" ? $"{entryName}-js-{fileIndex:0000}" :
                     fileExtension == "css" ? $"{entryName}-css-{fileIndex:0000}" :
