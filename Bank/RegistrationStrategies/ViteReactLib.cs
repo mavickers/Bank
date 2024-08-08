@@ -1,15 +1,17 @@
-﻿using System;
-using LightPath.Bank.ContentProcessors;
+﻿using LightPath.Bank.ContentProcessors;
 using LightPath.Bank.Interfaces;
+using Microsoft.Ajax.Utilities;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Ajax.Utilities;
 
 namespace LightPath.Bank.RegistrationStrategies;
 
+/// <summary>
+/// Asset registration strategy for Vite React library builds
+/// </summary>
 public class ViteReactLib : IBankAssetRegistrationStrategy
 {
     private readonly List<string> _exclusions = new();
