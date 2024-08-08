@@ -17,7 +17,7 @@ namespace Tests.RegistrationStrategies
             var assembly = Assembly.GetExecutingAssembly();
             var resourceNames = assembly.GetManifestResourceNames();
             var filteredResourceNames = resourceNames.Where(name => name.StartsWith($"{assembly.GetName().Name}.{@namespace}")).ToList();
-            var assets = new LightPath.Bank.RegistrationStrategies.DotNetMvcViews(assembly, @namespace);
+            var assets = new LightPath.Bank.RegistrationStrategies.DotNetMvcViewsStrategy(assembly, @namespace);
 
             BankAssets.Register(assets);
 

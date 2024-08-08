@@ -12,7 +12,7 @@ namespace LightPath.Bank.RegistrationStrategies;
 /// <summary>
 /// Asset registration strategy for Vite React library builds
 /// </summary>
-public class ViteReactLib : IBankAssetRegistrationStrategy
+public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
 {
     private readonly List<string> _exclusions = new();
     private dynamic _manifestJson;
@@ -29,7 +29,7 @@ public class ViteReactLib : IBankAssetRegistrationStrategy
     public string StartingPoint { get; }
     public string UrlPrepend { get; }
 
-    public ViteReactLib(Assembly assembly, string nameSpace, string assetManifest = "manifest.json", string keyPrefix = "", string urlPrepend = null)
+    public ViteReactLibStrategy(Assembly assembly, string nameSpace, string assetManifest = "manifest.json", string keyPrefix = "", string urlPrepend = null)
     {
         Assembly = assembly;
         KeyPrefix = keyPrefix?.Trim() ?? string.Empty;

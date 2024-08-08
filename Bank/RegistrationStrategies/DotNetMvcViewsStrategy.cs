@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace LightPath.Bank.RegistrationStrategies
 {
-    public class DotNetMvcViews : IBankAssetRegistrationStrategy
+    public class DotNetMvcViewsStrategy : IBankAssetRegistrationStrategy
     {
         private readonly List<string> _exclusions = new();
         public IDictionary<string, BankEmbeddedResource> All { get; }
@@ -22,7 +22,7 @@ namespace LightPath.Bank.RegistrationStrategies
             return this;
         }
 
-        public DotNetMvcViews(Assembly assembly, string @namespace, string urlPrepend = null, string keyPrefix = null)
+        public DotNetMvcViewsStrategy(Assembly assembly, string @namespace, string urlPrepend = null, string keyPrefix = null)
         {
             Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
             KeyPrefix = string.IsNullOrWhiteSpace(keyPrefix) ? null : keyPrefix;
