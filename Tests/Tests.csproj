@@ -32,7 +32,7 @@
 
     <ItemGroup>
         <EmbeddedResource Include="TestAssets\**" />
-        <EmbeddedResource Include="StrategyTestAssets\ReactVite\**" />
+        <EmbeddedResource Include="StrategyTestAssets\ViteReactLib\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -40,6 +40,8 @@
     </ItemGroup>
 
     <ItemGroup>
+      <None Remove="StrategyTestAssets\DotNetMvc\Views\Index.cshtml" />
+      <None Remove="StrategyTestAssets\DotNetMvc\Views\List.cshtml" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\node_modules\index-prod.html" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\assets\LSD-cat.png" />
       <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\assets\vite.svg" />
@@ -52,6 +54,8 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Resolvers.cs" />
+      <EmbeddedResource Include="StrategyTestAssets\DotNetMvc\Views\Index.cshtml" />
+      <EmbeddedResource Include="StrategyTestAssets\DotNetMvc\Views\List.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

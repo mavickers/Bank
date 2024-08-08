@@ -9,7 +9,7 @@ namespace Tests.RegistrationStrategies
         public void Basic()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var assets = new LightPath.Bank.RegistrationStrategies.ViteReactLib(assembly, "StrategyTestAssets.ReactVite.ClientApp.dist", "manifest.json", "ClientApp");
+            var assets = new LightPath.Bank.RegistrationStrategies.ViteReactLib(assembly, "StrategyTestAssets.ViteReactLib.ClientApp.dist", "manifest.json", "ClientApp");
 
             BankAssets.Register(assets);
 
