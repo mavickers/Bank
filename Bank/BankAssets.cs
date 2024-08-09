@@ -64,7 +64,7 @@ namespace LightPath.Bank
             return GetByKey(key);
         }
 
-        public static void Register(IBankAssetRegistrationStrategy strategy) => strategy.Register();
+        public static IList<BankEmbeddedResource> Register(IBankAssetRegistrationStrategy strategy) => strategy.Register();
 
         public static bool Register(BankEmbeddedResource resource) => Register(resource.ResourceKey, resource);
 

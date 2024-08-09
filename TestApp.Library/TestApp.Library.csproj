@@ -44,9 +44,15 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\ClientApp\dist\test.umd.cjs" />
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Scripts\HelloWorldBundled.js" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Scripts\ClientApp\dist\.vite\manifest.json" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

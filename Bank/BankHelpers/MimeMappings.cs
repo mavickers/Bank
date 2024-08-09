@@ -16,7 +16,7 @@ namespace LightPath.Bank
             { "bz", "application/x-bzip" },
             { "bz2", "application/x-bzip2" },
             { "cda", "application/x-cdf" },
-            { "cjs", "text/javascript" },
+            { "cjs", "application/javascript" },
             { "csh", "application/x-csh" },
             { "cshtml", "text/plain" },
             { "css", "text/css" },

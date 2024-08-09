@@ -1,4 +1,5 @@
-﻿using LightPath.Bank.ContentProcessors;
+﻿using System;
+using LightPath.Bank.ContentProcessors;
 using LightPath.Bank.Interfaces;
 using Microsoft.Ajax.Utilities;
 using System.Collections.Generic;
@@ -24,21 +25,19 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
     /// <summary>
     /// The app root namespace of the React app.
     /// </summary>
-    public string KeyPrefix { get; }
     public string NameSpace { get; }
     public string StartingPoint { get; }
     public string UrlPrepend { get; }
 
-    public ViteReactLibStrategy(Assembly assembly, string nameSpace, string assetManifest = "manifest.json", string keyPrefix = "", string urlPrepend = null)
+    public ViteReactLibStrategy(Assembly assembly, string nameSpace, string assetManifest = null, string urlPrepend = null)
     {
         Assembly = assembly;
-        KeyPrefix = keyPrefix?.Trim() ?? string.Empty;
         NameSpace = nameSpace;
-        StartingPoint = assetManifest;
+        StartingPoint = assetManifest == null || assetManifest == default ? "manifest.json" : assetManifest;
         UrlPrepend = urlPrepend;
     }
 
-    public BankEmbeddedResource this[string key] => _manifestMap.FirstOrDefault(item => item.Key == key).Value;
+    public BankEmbeddedResource this[string key] => _manifestMap.FirstOrDefault(item => string.Equals(item.Key, key, StringComparison.CurrentCultureIgnoreCase)).Value;
 
     public IBankAssetRegistrationStrategy Exclude(params string[] exclusions)
     {
@@ -49,13 +48,13 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
         return this;
     }
 
-    public bool Register()
+    public IList<BankEmbeddedResource> Register()
     {
         using var stream = Assembly.GetManifestResourceStream($"{Assembly.GetName().Name}.{NameSpace}..vite.{StartingPoint}");
         using var reader = stream == null ? null : new StreamReader(stream);
         var manifestJson = reader == null ? null : System.Web.Helpers.Json.Decode(reader.ReadToEnd());
 
-        if (manifestJson == null) return false;
+        if (manifestJson == null) return new List<BankEmbeddedResource>().AsReadOnly();
 
         _manifestJson = manifestJson;
 
@@ -75,7 +74,6 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
                 NameSpace = @namespace,
                 ContentProcessors = fileExtension.EndsWith("css") ? new() { new ReactCssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null,
                 ContentType = contentType,
-                ResourceKey = KeyPrefix.IsNullOrWhiteSpace() ? null : $"{KeyPrefix}-{entry.Key}",
                 UrlPrepend = UrlPrepend,
             };
 
@@ -83,6 +81,6 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
             _manifestMap.Add(entry.Key, resource);
         }
 
-        return true;
+        return _manifestMap.Select(item => item.Value).ToList().AsReadOnly();
     }
 }

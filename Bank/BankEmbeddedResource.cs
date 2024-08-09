@@ -105,7 +105,8 @@ namespace LightPath.Bank
 
         public string ResourceKey
         {
-            get => string.IsNullOrWhiteSpace(_resourceKey) ? $"EmbeddedResource-{_instanceId}-({Url})" : _resourceKey;
+            //get => string.IsNullOrWhiteSpace(_resourceKey) ? $"EmbeddedResource-{_instanceId}-({Url})" : _resourceKey;
+            get => string.IsNullOrWhiteSpace(_resourceKey) ? $"{_assembly.GetName().Name}.{NameSpace}.{FileName}" : _resourceKey;
             set => _resourceKey = string.IsNullOrWhiteSpace(value.Trim()) ? null : BankAssets.All.All(asset => asset.Value.ResourceKey != value) ? value : throw new Exception("Resource key already exists in BankAssets");
         }
         public string Url { get; private set; }

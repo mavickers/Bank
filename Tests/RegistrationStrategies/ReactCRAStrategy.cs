@@ -4,7 +4,7 @@ using LightPath.Bank.ContentProcessors;
 
 namespace Tests.RegistrationStrategies
 {
-    public class ReactCRA
+    public class ReactCRAStrategy
     {
         private readonly BankEmbeddedResource testStyle = new()
         {

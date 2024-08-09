@@ -36,6 +36,8 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
         UrlPrepend = urlPrepend;
     }
 
+    public BankEmbeddedResource this[string key] => throw new NotImplementedException();
+
     public IBankAssetRegistrationStrategy Exclude(params string[] exclusions)
     {
         if (exclusions == null) return this;
@@ -45,13 +47,13 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
         return this;
     }
 
-    public bool Register()
+    public IList<BankEmbeddedResource> Register()
     {
         using var stream = Assembly.GetManifestResourceStream($"{Assembly.GetName().Name}.{NameSpace}..vite.{StartingPoint}");
         using var reader = stream == null ? null : new StreamReader(stream);
         var manifestJson = reader == null ? null : System.Web.Helpers.Json.Decode(reader.ReadToEnd());
 
-        if (manifestJson == null) return false;
+        if (manifestJson == null) return new List<BankEmbeddedResource>().AsReadOnly();
 
         _manifestJson = manifestJson;
 
@@ -124,6 +126,6 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
             }
         }
 
-        return true;
+        return _manifestMap.Select(item => item.Value).ToList().AsReadOnly();
     }
 }

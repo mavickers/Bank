@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using LightPath.Bank;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using LightPath.Bank;
 
 namespace Tests.RegistrationStrategies
 {
-    public class DotNetMvcViews
+    public class DotNetMvcViewsStrategy
     {
         [Fact]
         public void Basic()

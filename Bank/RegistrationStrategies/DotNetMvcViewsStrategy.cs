@@ -8,10 +8,10 @@ namespace LightPath.Bank.RegistrationStrategies
 {
     public class DotNetMvcViewsStrategy : IBankAssetRegistrationStrategy
     {
+        private readonly List<BankEmbeddedResource> _cache = new();
         private readonly List<string> _exclusions = new();
         public IDictionary<string, BankEmbeddedResource> All { get; }
         public Assembly Assembly { get; }
-        public string KeyPrefix { get; }
         public string NameSpace { get; }
         public string StartingPoint => Assembly == null || string.IsNullOrWhiteSpace(NameSpace) ? null : $"{Assembly.GetName().Name}.{NameSpace}";
         public string UrlPrepend { get; }
@@ -22,35 +22,38 @@ namespace LightPath.Bank.RegistrationStrategies
             return this;
         }
 
-        public DotNetMvcViewsStrategy(Assembly assembly, string @namespace, string urlPrepend = null, string keyPrefix = null)
+        public DotNetMvcViewsStrategy(Assembly assembly, string @namespace, string urlPrepend = null)
         {
             Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
-            KeyPrefix = string.IsNullOrWhiteSpace(keyPrefix) ? null : keyPrefix;
             NameSpace = @namespace ?? throw new ArgumentNullException(nameof(@namespace));
             UrlPrepend = urlPrepend;
         }
 
-        public bool Register()
+        public BankEmbeddedResource this[string key] => _cache.FirstOrDefault(resource => resource.ResourceKey.ToLower().EndsWith(key.ToLower()));
+
+        public IList<BankEmbeddedResource> Register()
         {
             var allEmbeddedResources = Assembly.GetManifestResourceNames();
             var filteredEmbeddedResources = allEmbeddedResources.Where(res => res.StartsWith(StartingPoint) && res.ToLower().EndsWith(".cshtml"));
 
             foreach (var embeddedResource in filteredEmbeddedResources)
             {
+                if (_exclusions.Any(embeddedResource.EndsWith)) continue;
+
                 var bankResource = new BankEmbeddedResource
                 {
                     Assembly = Assembly,
                     FileName = embeddedResource.Remove(0, StartingPoint.Length + 1),
                     NameSpace = NameSpace,
                     ContentType = BankHelpers.MimeMappings["cshtml"],
-                    ResourceKey = embeddedResource,
                     UrlPrepend = UrlPrepend
                 };
 
                 BankAssets.Register(bankResource);
+                _cache.Add(bankResource);
             }
 
-            return true;
+            return _cache.AsReadOnly();
         }
     }
 }
