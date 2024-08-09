@@ -1,0 +1,10 @@
+@model List<string>
+
+<h3>This view represents a list view.</h3>
+
+<ul>
+    @foreach(var item in @Model)
+    {
+        <li>@item</li>
+    }
+</ul>

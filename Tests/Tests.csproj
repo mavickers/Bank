@@ -32,7 +32,7 @@
 
     <ItemGroup>
         <EmbeddedResource Include="TestAssets\**" />
-        <EmbeddedResource Include="StrategyTestAssets\ReactVite\**" />
+        <EmbeddedResource Include="StrategyTestAssets\ViteReactLibStrategy\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -40,17 +40,22 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="StrategyTestAssets\ReactVite\assets\vite.svg" />
+      <None Remove="StrategyTestAssets\DotNetMvcStrategy\Views\Index.cshtml" />
+      <None Remove="StrategyTestAssets\DotNetMvcStrategy\Views\List.cshtml" />
+      <None Remove="StrategyTestAssets\ReactVite\ClientApp\node_modules\index-prod.html" />
+      <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\assets\LSD-cat.png" />
+      <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\assets\vite.svg" />
+      <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\Dependency.js" />
+      <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\style-2.css" />
+      <None Remove="StrategyTestAssets\ReactVite\ClientApp\src\style-3.css" />
       <None Remove="TestAssets\HelloVariable.js" />
       <None Remove="TestAssets\UrlTest.css" />
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="StrategyTestAssets\ReactVite\.vite\manifest.json" />
-    </ItemGroup>
-
-    <ItemGroup>
       <EmbeddedResource Include="Resolvers.cs" />
+      <EmbeddedResource Include="StrategyTestAssets\DotNetMvcStrategy\Views\Index.cshtml" />
+      <EmbeddedResource Include="StrategyTestAssets\DotNetMvcStrategy\Views\List.cshtml" />
     </ItemGroup>
 
     <ItemGroup>

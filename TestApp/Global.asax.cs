@@ -1,9 +1,11 @@
-﻿using LightPath.Bank;
+﻿using System.Linq;
+using LightPath.Bank;
 using System.Reflection;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using LightPath.Bank.RegistrationStrategies;
 
 namespace TestApp
 {
@@ -56,11 +58,14 @@ namespace TestApp
             BankAssets.Register("hello-world-script", scriptResource1);
             BankAssets.Register("hello-injected-script", scriptResource2);
             BankAssets.Register("hello-world-script-bundled", scriptResource3);
+            
+            var testAssets = BankAssets.Register(new ViteReactLibStrategy(Assembly.GetAssembly(typeof(TestApp.Library.Constants)), "Scripts.ClientApp.dist"));
 
             HostingEnvironment.RegisterVirtualPathProvider(BankAssets.VirtualPathProvider);
             BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
             BundleTable.EnableOptimizations = true;
             BundleTable.Bundles.Add(new ScriptBundle("~/bundles/hello-world").Include(BankAssets.GetByKey("hello-world-script-bundled")));
+            BundleTable.Bundles.Add(new ScriptBundle("~/bundles/test").Include(BankAssets.GetByKey(testAssets.First().ResourceKey)));
         }
     }
 }

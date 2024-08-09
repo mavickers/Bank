@@ -15,6 +15,8 @@ namespace LightPath.Bank.Interfaces
         string StartingPoint { get; }
         string UrlPrepend { get; }
 
+        BankEmbeddedResource this[string key] { get; }
+
         /// <summary>
         /// Exclude file(s) from registration.
         /// </summary>
@@ -28,7 +30,7 @@ namespace LightPath.Bank.Interfaces
         /// <summary>
         /// Execute the registration process.
         /// </summary>
-        /// <returns></returns>
-        bool Register();
+        /// <returns>A list of BankEmbeddedResource registered by the strategy</returns>
+        IList<BankEmbeddedResource> Register();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using LightPath.Bank.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace LightPath.Bank
     public static class BankAssets
     {
         private const string _pathPrefix = "/lightpath.bank/";
-        private static readonly Dictionary<string, BankEmbeddedResource> _cache = new();
+        private static readonly ConcurrentDictionary<string, BankEmbeddedResource> _cache = new();
         private static readonly List<IBankEmbeddedResourceResolver> _resolvers = new();
 
         public static IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
@@ -21,7 +22,7 @@ namespace LightPath.Bank
 
         public static void Clear() => _cache.Clear();
 
-        public static bool Contains(BankEmbeddedResource resource) => _cache.ContainsValue(resource);
+        public static bool Contains(BankEmbeddedResource resource) => _cache.Values.Contains(resource);
 
         public static bool ContainsKey(string key) => _cache.ContainsKey(key);
 
@@ -63,22 +64,19 @@ namespace LightPath.Bank
             return GetByKey(key);
         }
 
-        public static void Register(IBankAssetRegistrationStrategy strategy) => strategy.Register();
+        public static IList<BankEmbeddedResource> Register(IBankAssetRegistrationStrategy strategy) => strategy.Register();
 
-        public static void Register(BankEmbeddedResource resource) => Register($"EmbeddedResource-{Guid.NewGuid()}-({resource.Url})", resource);
+        public static bool Register(BankEmbeddedResource resource) => Register(resource.ResourceKey, resource);
 
-        public static void Register(string key, BankEmbeddedResource resource)
+        public static bool Register(string key, BankEmbeddedResource resource)
         {
-            var _key = string.IsNullOrWhiteSpace(key) ? $"EmbeddedResource-{Guid.NewGuid()}-({resource.Url})" : key;
+            var _key = !string.IsNullOrWhiteSpace(key) ? key : resource.ResourceKey;
 
             if (_cache.ContainsKey(_key) && Config.ThrowOnDuplicate) throw new Exception($"Asset with key {_key} is already registered");
             if (ContainsUrl(resource.Url) && Config.ThrowOnDuplicate) throw new Exception($"Embedded resource with url '${resource.Url}' is already registered");
             if (resource.Exceptions?.Any() ?? false) throw new Exception("Embedded resource contains exceptions", resource.Exceptions.First());
 
-            lock (_cache)
-            {
-                _cache.Add(_key, resource);
-            }
+            return _cache.TryAdd(_key, resource);
         }
 
         public static void RegisterResolver(Type BankEmbeddedResourceResolverType)
@@ -92,25 +90,19 @@ namespace LightPath.Bank
         {
             if (string.IsNullOrWhiteSpace(oldKey)) return false;
             if (string.IsNullOrWhiteSpace(newKey)) return false;
+            if (!_cache.ContainsKey(oldKey)) return false;
+            if (_cache.ContainsKey(newKey)) return false;
 
-            lock (_cache)
-            {
-                if (!_cache.ContainsKey(oldKey)) return false;
-                if (_cache.ContainsKey(newKey)) return false;
+            if (!_cache.TryRemove(oldKey, out var oldValue)) return false;
+            if (!_cache.TryAdd(newKey, oldValue)) return false;
 
-                var value = _cache[oldKey];
-
-                _cache.Remove(oldKey);
-                _cache.Add(newKey, value);
-
-                return true;
-            }
+            return true;
         }
 
         public static bool Rekey(BankEmbeddedResource resource, string newKey)
         {
             if (resource == null) return false;
-            if (!_cache.ContainsValue(resource)) return false;
+            if (!_cache.Values.Contains(resource)) return false;
 
             return Rekey(_cache.FirstOrDefault(res => res.Value == resource).Key, newKey);
         }
@@ -149,10 +141,7 @@ namespace LightPath.Bank
 
         public static bool Unregister(string key)
         {
-            lock (_cache)
-            {
-                return _cache.Remove(key);
-            }
+            return _cache.TryRemove(key, out _);
         }
 
         public static void UnregisterResolver(Type BankEmbeddedResourceResolverType)

@@ -1,0 +1,8 @@
+{
+  "src/main.jsx": {
+    "file": "test.umd.cjs",
+    "name": "main",
+    "src": "src/main.jsx",
+    "isEntry": true
+  }
+}

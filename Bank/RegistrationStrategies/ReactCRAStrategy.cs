@@ -1,10 +1,11 @@
-﻿using LightPath.Bank.Interfaces;
+﻿using LightPath.Bank.ContentProcessors;
+using LightPath.Bank.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using LightPath.Bank.ContentProcessors;
 
 namespace LightPath.Bank.RegistrationStrategies
 {
@@ -32,6 +33,8 @@ namespace LightPath.Bank.RegistrationStrategies
             UrlPrepend = urlPrepend;
         }
 
+        public BankEmbeddedResource this[string key] => throw new NotImplementedException();
+
         public IBankAssetRegistrationStrategy Exclude(params string[] exclusions)
         {
             if (exclusions == null) return this;
@@ -41,14 +44,13 @@ namespace LightPath.Bank.RegistrationStrategies
             return this;
         }
 
-        public bool Register()
+        public IList<BankEmbeddedResource> Register()
         {
             using var stream = Assembly.GetManifestResourceStream($"{Assembly.GetName().Name}.{NameSpace}.{StartingPoint}");
             using var reader = stream == null ? null : new StreamReader(stream);
             var manifestJson = reader == null ? null : System.Web.Helpers.Json.Decode(reader.ReadToEnd());
 
-            if (manifestJson == null) return false;
-            if (manifestJson.files == null) return false;
+            if (manifestJson == null || manifestJson.files == null) return new List<BankEmbeddedResource>().AsReadOnly();
 
             _manifestJson = manifestJson;
 
@@ -71,14 +73,14 @@ namespace LightPath.Bank.RegistrationStrategies
                     FileName = filename,
                     ContentType = contentType,
                     UrlPrepend = UrlPrepend,
-                    ContentProcessors = filename.ToLower().EndsWith("css") ? new() { new ReactCRACssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null,
+                    ContentProcessors = filename.ToLower().EndsWith("css") ? new() { new ReactCssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null,
                 };
 
                 BankAssets.Register(resource);
                 _manifestMap.Add(key, resource);
             }
 
-            return true;
+            return _manifestMap.Select(item => item.Value).ToList().AsReadOnly();
         }
     }
 }

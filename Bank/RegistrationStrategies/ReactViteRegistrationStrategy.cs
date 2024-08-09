@@ -1,14 +1,15 @@
-﻿using System;
+﻿using LightPath.Bank.ContentProcessors;
+using LightPath.Bank.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using LightPath.Bank.ContentProcessors;
-using LightPath.Bank.Interfaces;
 
 namespace LightPath.Bank.RegistrationStrategies;
 
+[Obsolete("No longer supported - use ViteReactLib strategy")]
 public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
 {
     private readonly List<string> _exclusions = new();
@@ -35,6 +36,8 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
         UrlPrepend = urlPrepend;
     }
 
+    public BankEmbeddedResource this[string key] => throw new NotImplementedException();
+
     public IBankAssetRegistrationStrategy Exclude(params string[] exclusions)
     {
         if (exclusions == null) return this;
@@ -44,13 +47,13 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
         return this;
     }
 
-    public bool Register()
+    public IList<BankEmbeddedResource> Register()
     {
         using var stream = Assembly.GetManifestResourceStream($"{Assembly.GetName().Name}.{NameSpace}..vite.{StartingPoint}");
         using var reader = stream == null ? null : new StreamReader(stream);
         var manifestJson = reader == null ? null : System.Web.Helpers.Json.Decode(reader.ReadToEnd());
 
-        if (manifestJson == null) return false;
+        if (manifestJson == null) return new List<BankEmbeddedResource>().AsReadOnly();
 
         _manifestJson = manifestJson;
 
@@ -111,7 +114,7 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
                     FileName = fileName,
                     ContentType = contentType,
                     UrlPrepend = UrlPrepend,
-                    ContentProcessors = fileExtension.EndsWith("css") ? new() { new ReactCRACssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null
+                    ContentProcessors = fileExtension.EndsWith("css") ? new() { new ReactCssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null
                 };
                 var resourceKeyFilename = fileExtension == "js" ? $"{entryName}-js-{fileIndex:0000}" :
                     fileExtension == "css" ? $"{entryName}-css-{fileIndex:0000}" :
@@ -123,6 +126,6 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
             }
         }
 
-        return true;
+        return _manifestMap.Select(item => item.Value).ToList().AsReadOnly();
     }
 }
