@@ -105,7 +105,11 @@ Assuming an assembly name of "TestApp", when the page is rendered it will create
 
      <script src="/TestApp/Scripts/GoodbyeWorld.js?638342022216348606"></script>
 
-A url path is built using the assembly name, namespace and facade filename from the registered embedded resource. When the request is received using this path, the Bank middleware intervenes, looking up the path in its registered resources and serving the content in the response.
+#### Retrieval Using URL Paths
+
+A url path is built using the assembly name, namespace and facade filename from the registered embedded resource. When the request is received using this path, the Bank middleware intervenes, looking up the path in its registered resources and serving the content in the response. An example of this is in the HTML Helper example above where the URL emitted for the script tag is /TestApp/Scripts/GoodbyeWorld.js, where TestApp is the assembly name, Scripts is the namespace, and GoodbyeWorld is the facade name. If no facade name is specified, the original filename of the asset is used.
+
+Additionally, assets can be reference by URL using LightPath.Bank as a root path and the registered asset key as the filename. Using the Hello/Goodbye World example again, the asset was registered using the key "hello-world-script". Therefore the file can be reference using the path /LightPath.Bank/hello-world-script.
 
 ### Additional Notes
 
