@@ -85,12 +85,12 @@ There are two steps for registration:
 
 The registered embedded resources can be retrieved directly through the API or using the included html helpers.
 
-#### Retrieval by API
+#### Retrieval Using the API
 
 * BankAssets.GetByUrl. This method is best used in middleware processing, passing in the request path minus querystrings.
 * BankAssets.GetByKey. Use this to retrieve a registered embedded resource by key name.
 
-#### Using the HTML Helpers
+#### Retrieval Using the HTML Helpers
 
 In MVC view code the RenderEmbeddedResource html helper is available which will emit html markup for registered embedded resources that have the following content types:
 * text/css
