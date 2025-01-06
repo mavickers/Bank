@@ -6,7 +6,7 @@
         <Owners>mavickers,lightpath</Owners>
         <Company>LightPath Solutions, LLC</Company>
         <Product>Bank Embedded Resources Library</Product>
-        <Copyright>2024 LightPath Solutions, LLC</Copyright>
+        <Copyright>2025 LightPath Solutions, LLC</Copyright>
         <PackageProjectUrl>https://github.com/mavickers/Bank</PackageProjectUrl>
         <Title>Bank</Title>
         <AssemblyName>LightPath.Bank</AssemblyName>
@@ -21,9 +21,9 @@
         <PackageTags></PackageTags>
         <Description>A library for registering, retrieving and rendering embedded resources</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <Version>1.4.5</Version>
-        <AssemblyVersion>1.4.5</AssemblyVersion>
-        <FileVersion>1.4.5</FileVersion>
+        <Version>1.4.7</Version>
+        <AssemblyVersion>1.4.7</AssemblyVersion>
+        <FileVersion>1.4.7</FileVersion>
         <LangVersion>latest</LangVersion>
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     </PropertyGroup>

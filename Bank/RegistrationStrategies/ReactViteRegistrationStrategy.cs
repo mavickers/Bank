@@ -1,4 +1,5 @@
 ﻿using LightPath.Bank.ContentProcessors;
+using LightPath.Bank.Extensions;
 using LightPath.Bank.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,8 @@ namespace LightPath.Bank.RegistrationStrategies;
 [Obsolete("No longer supported - use ViteReactLib strategy")]
 public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
 {
-    private readonly List<string> _exclusions = new();
+    private readonly List<string> _extensionInclusions = new();
+    private readonly List<string> _pathExclusions = new();
     private dynamic _manifestJson;
     private readonly Dictionary<string, BankEmbeddedResource> _manifestMap = new();
 
@@ -29,23 +31,21 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
 
     public ReactViteRegistrationStrategy(Assembly assembly, string nameSpace, string assetManifest = "manifest.json", string keyPrefix = "", string urlPrepend = null)
     {
-        Assembly = assembly;
-        KeyPrefix = keyPrefix;
-        NameSpace = nameSpace;
-        StartingPoint = assetManifest;
+        Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+        KeyPrefix = keyPrefix ?? throw new ArgumentNullException(nameof(keyPrefix));
+        NameSpace = nameSpace ?? throw new ArgumentNullException(nameof(nameSpace));
+        StartingPoint = assetManifest ?? throw new ArgumentNullException(nameof(assetManifest));
         UrlPrepend = urlPrepend;
     }
 
     public BankEmbeddedResource this[string key] => throw new NotImplementedException();
 
-    public IBankAssetRegistrationStrategy Exclude(params string[] exclusions)
-    {
-        if (exclusions == null) return this;
-            
-        _exclusions.AddRange(exclusions.Select(x => x.ToLower()));
+    [Obsolete("Use ExcludePaths instead")]
+    public IBankAssetRegistrationStrategy Exclude(params string[] exclusions) => ExcludePaths(exclusions);
 
-        return this;
-    }
+    public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.ExcludePaths(_pathExclusions, exclusions);
+
+    public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions) => this.IncludeExtensions(_extensionInclusions, inclusions);
 
     public IList<BankEmbeddedResource> Register()
     {
@@ -72,14 +72,14 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
             var entryFile = (string)entry.Key;
             var entryExtension = entryFile.Split('.').Last().ToLower();
 
-            if (!_exclusions.Contains(entryExtension)) files.Add(entryFile);
+            if (!_pathExclusions.Contains(entryExtension)) files.Add(entryFile);
 
             // now add the entry app js... it should be the file property in the config
 
             var appFile = (string)entryConfig.file;
             var appExtension = appFile.Split('.').Last().ToLower();
 
-            if (!_exclusions.Contains(appExtension)) files.Add(appFile);
+            if (!_pathExclusions.Contains(appExtension)) files.Add(appFile);
 
             // now iterate through the css files and add
 
@@ -87,14 +87,14 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
             {
                 var cssFileExtension = cssFile.Split('.').Last().ToLower();
 
-                if (!_exclusions.Contains(cssFileExtension)) files.Add(cssFile);
+                if (!_pathExclusions.Contains(cssFileExtension)) files.Add(cssFile);
             }
 
             foreach (var assetFile in entryAssets)
             {
                 var cssFileExtension = assetFile.Split('.').Last().ToLower();
 
-                if (!_exclusions.Contains(cssFileExtension)) files.Add(assetFile);
+                if (!_pathExclusions.Contains(cssFileExtension)) files.Add(assetFile);
             }
 
             // iterate through the built file list and create/add the resource

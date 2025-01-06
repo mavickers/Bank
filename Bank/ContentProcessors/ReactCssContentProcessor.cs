@@ -14,7 +14,7 @@ namespace LightPath.Bank.ContentProcessors
         private readonly Assembly _assembly;
         private readonly string _nameSpace;
         private readonly string _prepend;
-        private static readonly string[] exclusions = new string[] { "http:", "https://" };
+        private static readonly string[] exclusions = new string[] { "http:", "https://", "data:" };
 
         public ReactCssContentProcessor(Assembly assembly, string nameSpace, string prepend = null)
         {

@@ -1,7 +1,7 @@
-﻿using System;
-using LightPath.Bank.ContentProcessors;
+﻿using LightPath.Bank.ContentProcessors;
+using LightPath.Bank.Extensions;
 using LightPath.Bank.Interfaces;
-using Microsoft.Ajax.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -15,7 +15,8 @@ namespace LightPath.Bank.RegistrationStrategies;
 /// </summary>
 public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
 {
-    private readonly List<string> _exclusions = new();
+    private readonly List<string> _extensionInclusions = new();
+    private readonly List<string> _pathExclusions = new();
     private dynamic _manifestJson;
     private readonly Dictionary<string, BankEmbeddedResource> _manifestMap = new();
 
@@ -31,22 +32,20 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
 
     public ViteReactLibStrategy(Assembly assembly, string nameSpace, string assetManifest = null, string urlPrepend = null)
     {
-        Assembly = assembly;
-        NameSpace = nameSpace;
-        StartingPoint = assetManifest == null || assetManifest == default ? "manifest.json" : assetManifest;
+        Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+        NameSpace = nameSpace ?? throw new ArgumentNullException(nameof(nameSpace));
+        StartingPoint = assetManifest ?? "manifest.json";
         UrlPrepend = urlPrepend;
     }
 
     public BankEmbeddedResource this[string key] => _manifestMap.FirstOrDefault(item => string.Equals(item.Key, key, StringComparison.CurrentCultureIgnoreCase)).Value;
 
-    public IBankAssetRegistrationStrategy Exclude(params string[] exclusions)
-    {
-        if (exclusions == null) return this;
-            
-        _exclusions.AddRange(exclusions.Select(x => x.ToLower()));
+    [Obsolete("Use ExcludePaths instead")]
+    public IBankAssetRegistrationStrategy Exclude(params string[] exclusions) => ExcludePaths(exclusions);
 
-        return this;
-    }
+    public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.ExcludePaths(_pathExclusions, exclusions);
+
+    public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions) => this.IncludeExtensions(_extensionInclusions, inclusions);
 
     public IList<BankEmbeddedResource> Register()
     {

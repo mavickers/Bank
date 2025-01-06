@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Tests.RegistrationStrategies
 {
-    public class DotNetMvcViewsStrategy
+    public class ScoopStrategy
     {
         [Fact]
         public void Basic()
@@ -12,11 +12,11 @@ namespace Tests.RegistrationStrategies
             var assembly = Assembly.GetExecutingAssembly();
             var resourceNames = assembly.GetManifestResourceNames();
             var filteredResourceNames = resourceNames.Where(name => name.StartsWith($"{assembly.GetName().Name}.{@namespace}")).ToList();
-            var assets = new LightPath.Bank.RegistrationStrategies.DotNetMvcViewsStrategy(assembly, @namespace);
+            var assets = new LightPath.Bank.RegistrationStrategies.ScoopStrategy(assembly, @namespace);
 
             BankAssets.Register(assets);
 
-            Assert.Equal(2, assets.All.Count);
+            Assert.Equal(3, assets.All.Count);
             Assert.Equal(3, filteredResourceNames.Count);
 
             foreach (var asset in assets.All)

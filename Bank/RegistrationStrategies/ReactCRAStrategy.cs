@@ -1,4 +1,5 @@
 ﻿using LightPath.Bank.ContentProcessors;
+using LightPath.Bank.Extensions;
 using LightPath.Bank.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,8 @@ namespace LightPath.Bank.RegistrationStrategies
 {
     public class ReactCRAStrategy : IBankAssetRegistrationStrategy
     {
-        private readonly List<string> _exclusions = new();
+        private readonly List<string> _extensionInclusions = new();
+        private readonly List<string> _pathExclusions = new();
         private dynamic _manifestJson;
         private readonly Dictionary<string, BankEmbeddedResource> _manifestMap = new();
 
@@ -27,22 +29,20 @@ namespace LightPath.Bank.RegistrationStrategies
 
         public ReactCRAStrategy(Assembly assembly, string nameSpace, string assetManifest = "asset-manifest.json", string urlPrepend = null)
         {
-            Assembly = assembly;
-            NameSpace = nameSpace;
-            StartingPoint = assetManifest;
+            Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+            NameSpace = nameSpace ?? throw new ArgumentNullException(nameof(nameSpace));
+            StartingPoint = assetManifest ?? throw new ArgumentNullException(nameof(assetManifest));
             UrlPrepend = urlPrepend;
         }
 
         public BankEmbeddedResource this[string key] => throw new NotImplementedException();
 
-        public IBankAssetRegistrationStrategy Exclude(params string[] exclusions)
-        {
-            if (exclusions == null) return this;
-            
-            _exclusions.AddRange(exclusions.Select(x => x.ToLower()));
+        [Obsolete("Use ExcludePaths instead")]
+        public IBankAssetRegistrationStrategy Exclude(params string[] exclusions) => ExcludePaths(exclusions);
 
-            return this;
-        }
+        public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.ExcludePaths(_pathExclusions, exclusions);
+
+        public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions) => this.IncludeExtensions(_extensionInclusions, inclusions);
 
         public IList<BankEmbeddedResource> Register()
         {
@@ -64,7 +64,7 @@ namespace LightPath.Bank.RegistrationStrategies
                 var extension = filename.Split('.').Last().ToLower();
                 var contentType = BankHelpers.MimeMappings.TryGetValue(extension, out var mapping) ? mapping : null;
 
-                if (_exclusions.Contains(extension)) continue;
+                if (_pathExclusions.Contains(extension)) continue;
 
                 var resource = new BankEmbeddedResource
                 {
