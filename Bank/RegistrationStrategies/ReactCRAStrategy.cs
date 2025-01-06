@@ -37,6 +37,7 @@ namespace LightPath.Bank.RegistrationStrategies
 
         public BankEmbeddedResource this[string key] => throw new NotImplementedException();
 
+        [Obsolete("Use ExcludePaths instead")]
         public IBankAssetRegistrationStrategy Exclude(params string[] exclusions) => ExcludePaths(exclusions);
 
         public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.ExcludePaths(_pathExclusions, exclusions);

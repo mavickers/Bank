@@ -40,6 +40,7 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
 
     public BankEmbeddedResource this[string key] => _manifestMap.FirstOrDefault(item => string.Equals(item.Key, key, StringComparison.CurrentCultureIgnoreCase)).Value;
 
+    [Obsolete("Use ExcludePaths instead")]
     public IBankAssetRegistrationStrategy Exclude(params string[] exclusions) => ExcludePaths(exclusions);
 
     public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.ExcludePaths(_pathExclusions, exclusions);
