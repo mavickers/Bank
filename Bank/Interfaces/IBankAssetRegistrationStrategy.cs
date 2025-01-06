@@ -18,14 +18,24 @@ namespace LightPath.Bank.Interfaces
         BankEmbeddedResource this[string key] { get; }
 
         /// <summary>
-        /// Exclude file(s) from registration.
+        /// Exclude paths from registration.
         /// </summary>
         /// <param name="exclusions"></param>
         /// <remarks>
-        /// Exclusions can be any string (a filename or extension for example) that can
+        /// Path exclusions can be any string (a filename or extension for example) that can
         /// be used to identify the resources that should be excluded from registration.
         /// </remarks>
-        IBankAssetRegistrationStrategy Exclude(params string[] exclusions);
+        IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions);
+
+        /// <summary>
+        /// Include extensions in registration
+        /// </summary>
+        /// <param name="inclusions"></param>
+        /// <returns>The same registration strategy instance</returns>
+        /// <remarks>
+        /// Each file extension should be prepended with a period.
+        /// </remarks>
+        IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions);
 
         /// <summary>
         /// Execute the registration process.

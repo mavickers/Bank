@@ -7,8 +7,7 @@ using System.Reflection;
 
 namespace LightPath.Bank.RegistrationStrategies
 {
-    [Obsolete("Use Scoop strategy with .IncludeExtensions(\".cshtml\") instead")]
-    public class DotNetMvcViewsStrategy : IBankAssetRegistrationStrategy
+    public class ScoopStrategy : IBankAssetRegistrationStrategy
     {
         private readonly List<BankEmbeddedResource> _cache = new();
         private readonly List<string> _extensionInclusions = new();
@@ -24,14 +23,9 @@ namespace LightPath.Bank.RegistrationStrategies
 
         public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.ExcludePaths(_pathExclusions, exclusions);
 
-        public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions)
-        {
-            if (inclusions != null) _extensionInclusions.AddRange(inclusions.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim().ToLower()));
+        public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions) => this.IncludeExtensions(_extensionInclusions, inclusions);
 
-            return this;
-        }
-
-        public DotNetMvcViewsStrategy(Assembly assembly, string @namespace, string urlPrepend = null)
+        public ScoopStrategy(Assembly assembly, string @namespace, string urlPrepend = null)
         {
             Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
             NameSpace = @namespace ?? throw new ArgumentNullException(nameof(@namespace));
@@ -43,11 +37,11 @@ namespace LightPath.Bank.RegistrationStrategies
         public IList<BankEmbeddedResource> Register()
         {
             var allEmbeddedResources = Assembly.GetManifestResourceNames();
-            var filteredEmbeddedResources = allEmbeddedResources.Where(res => res.StartsWith(StartingPoint) && res.ToLower().EndsWith(".cshtml"));
+            var filteredEmbeddedResources = allEmbeddedResources.Where(res => res.StartsWith(StartingPoint) && (_extensionInclusions.Count == 0 || _extensionInclusions.Any(ext => res.ToLower().EndsWith(ext))));
 
             foreach (var embeddedResource in filteredEmbeddedResources)
             {
-                if (_pathExclusions.Any(embeddedResource.EndsWith)) continue;
+                if (_pathExclusions.Any(embeddedResource.ToLower().EndsWith)) continue;
 
                 var bankResource = new BankEmbeddedResource
                 {
