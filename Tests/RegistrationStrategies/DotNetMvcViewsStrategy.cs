@@ -8,13 +8,15 @@ namespace Tests.RegistrationStrategies
         [Fact]
         public void Basic()
         {
-            var @namespace = "StrategyTestAssets.DotNetMvc.Views";
+            var @namespace = "StrategyTestAssets.DotNetMvcStrategy.Views";
             var assembly = Assembly.GetExecutingAssembly();
             var resourceNames = assembly.GetManifestResourceNames();
             var filteredResourceNames = resourceNames.Where(name => name.StartsWith($"{assembly.GetName().Name}.{@namespace}")).ToList();
             var assets = new LightPath.Bank.RegistrationStrategies.DotNetMvcViewsStrategy(assembly, @namespace);
 
             BankAssets.Register(assets);
+
+            Assert.NotEmpty(filteredResourceNames);
 
             foreach (var name in filteredResourceNames)
             {
