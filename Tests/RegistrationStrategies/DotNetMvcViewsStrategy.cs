@@ -16,16 +16,17 @@ namespace Tests.RegistrationStrategies
 
             BankAssets.Register(assets);
 
-            Assert.NotEmpty(filteredResourceNames);
+            Assert.Equal(2, assets.All.Count);
+            Assert.Equal(3, filteredResourceNames.Count);
 
-            foreach (var name in filteredResourceNames)
+            foreach (var asset in assets.All)
             {
-                Assert.NotNull(BankAssets.All[name]);
+                Assert.NotNull(BankAssets.All[asset.Key]);
 
-                using var stream = assembly.GetManifestResourceStream(name);
+                using var stream = assembly.GetManifestResourceStream(asset.Value.ResourceKey);
                 using var reader = stream == null ? null : new StreamReader(stream);
                 var resourceContents = reader?.ReadToEnd();
-                var assetContents = BankAssets.All[name].Contents.AsString();
+                var assetContents = BankAssets.All[asset.Key].Contents.AsString();
 
                 Assert.Equal(resourceContents, assetContents);
             }

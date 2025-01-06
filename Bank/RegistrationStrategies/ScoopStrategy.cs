@@ -2,6 +2,7 @@
 using LightPath.Bank.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 
@@ -9,10 +10,10 @@ namespace LightPath.Bank.RegistrationStrategies
 {
     public class ScoopStrategy : IBankAssetRegistrationStrategy
     {
-        private readonly List<BankEmbeddedResource> _cache = new();
+        private readonly Dictionary<string, BankEmbeddedResource> _cache = new();
         private readonly List<string> _extensionInclusions = new();
         private readonly List<string> _pathExclusions = new();
-        public IDictionary<string, BankEmbeddedResource> All { get; }
+        public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
         public Assembly Assembly { get; }
         public string NameSpace { get; }
         public string StartingPoint => Assembly == null || string.IsNullOrWhiteSpace(NameSpace) ? null : $"{Assembly.GetName().Name}.{NameSpace}";
@@ -32,7 +33,7 @@ namespace LightPath.Bank.RegistrationStrategies
             UrlPrepend = urlPrepend;
         }
 
-        public BankEmbeddedResource this[string key] => _cache.FirstOrDefault(resource => resource.ResourceKey.ToLower().EndsWith(key.ToLower()));
+        public BankEmbeddedResource this[string key] => _cache.FirstOrDefault(resource => string.Equals(resource.Key, key, StringComparison.InvariantCultureIgnoreCase)).Value;
 
         public IList<BankEmbeddedResource> Register()
         {
@@ -53,10 +54,10 @@ namespace LightPath.Bank.RegistrationStrategies
                 };
 
                 BankAssets.Register(bankResource);
-                _cache.Add(bankResource);
+                _cache.Add(bankResource.ResourceKey, bankResource);
             }
 
-            return _cache.AsReadOnly();
+            return _cache.Select(item => item.Value).ToList().AsReadOnly();
         }
     }
 }

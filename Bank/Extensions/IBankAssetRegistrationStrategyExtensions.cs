@@ -16,7 +16,7 @@ namespace LightPath.Bank.Extensions
 
         public static IBankAssetRegistrationStrategy IncludeExtensions(this IBankAssetRegistrationStrategy strategy, List<string> existingInclusions, params string[] newInclusions)
         {
-            if (newInclusions != null) existingInclusions.AddRange(existingInclusions.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim().ToLower()));
+            if (newInclusions != null) existingInclusions.AddRange(newInclusions.Where(x => !string.IsNullOrWhiteSpace(x)).Select(x => x.Trim().ToLower()));
 
             return strategy;
         }
