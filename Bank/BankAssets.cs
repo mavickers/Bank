@@ -72,8 +72,8 @@ namespace LightPath.Bank
         {
             var _key = !string.IsNullOrWhiteSpace(key) ? key : resource.ResourceKey;
 
-            if (_cache.ContainsKey(_key) && Config.ThrowOnDuplicate) throw new Exception($"Asset with key {_key} is already registered");
-            if (ContainsUrl(resource.Url) && Config.ThrowOnDuplicate) throw new Exception($"Embedded resource with url '${resource.Url}' is already registered");
+            if (_cache.ContainsKey(_key)) return Config.ThrowOnDuplicate ? throw new Exception($"Asset with key {_key} is already registered") : false;
+            if (ContainsUrl(resource.Url)) return Config.ThrowOnDuplicate ? throw new Exception($"Embedded resource with url '${resource.Url}' is already registered") : false;
             if (resource.Exceptions?.Any() ?? false) throw new Exception("Embedded resource contains exceptions", resource.Exceptions.First());
 
             return _cache.TryAdd(_key, resource);

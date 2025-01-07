@@ -8,6 +8,8 @@ namespace Tests.RegistrationStrategies
         [Fact]
         public void Basic()
         {
+            BankAssets.Clear();
+
             var assembly = Assembly.GetExecutingAssembly();
             var strategy = new LightPath.Bank.RegistrationStrategies.ViteReactLibStrategy(assembly, "StrategyTestAssets.ViteReactLibStrategy.ClientApp.dist");
             var assets = BankAssets.Register(strategy);

@@ -13,7 +13,9 @@ namespace LightPath.Bank.RegistrationStrategies
     public class ReactCRAStrategy : IBankAssetRegistrationStrategy
     {
         private readonly List<string> _extensionInclusions = new();
+        private readonly List<string> _extensionExclusions = new();
         private readonly List<string> _pathExclusions = new();
+        private readonly List<string> _pathInclusions = new();
         private dynamic _manifestJson;
         private readonly Dictionary<string, BankEmbeddedResource> _manifestMap = new();
 
@@ -40,9 +42,15 @@ namespace LightPath.Bank.RegistrationStrategies
         [Obsolete("Use ExcludePaths instead")]
         public IBankAssetRegistrationStrategy Exclude(params string[] exclusions) => ExcludePaths(exclusions);
 
-        public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.ExcludePaths(_pathExclusions, exclusions);
+        public IBankAssetRegistrationStrategy ExcludeExtensions(params string[] exclusions) => this.SafeAdd(_extensionExclusions, exclusions);
 
-        public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions) => this.IncludeExtensions(_extensionInclusions, inclusions);
+        public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.SafeAdd(_pathExclusions, exclusions);
+
+        public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions) => this.SafeAdd(_extensionInclusions, inclusions);
+
+        public IBankAssetRegistrationStrategy IncludePaths(params string[] inclusions) => this.SafeAdd(_pathInclusions, inclusions);
+
+        public IList<string> Filters(Constants.FilterTypes filter) => this.GetFilters(filter, _extensionExclusions, _extensionInclusions, _extensionExclusions, _pathInclusions);
 
         public IList<BankEmbeddedResource> Register()
         {
@@ -60,11 +68,13 @@ namespace LightPath.Bank.RegistrationStrategies
                 var value = (string)file.Value.ToString();
                 var path = value.Substring(1).Split('/');
                 var filename = path.Last();
+
+                if (!this.PassesFilters(value)) continue;
+                
                 var @namespace = $"{NameSpace}{(path.Length > 1 ? "." + string.Join(".", path.Where(p => p != path.Last())) : string.Empty)}";
                 var extension = filename.Split('.').Last().ToLower();
                 var contentType = BankHelpers.MimeMappings.TryGetValue(extension, out var mapping) ? mapping : null;
 
-                if (_pathExclusions.Contains(extension)) continue;
 
                 var resource = new BankEmbeddedResource
                 {
