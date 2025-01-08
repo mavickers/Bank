@@ -15,7 +15,6 @@ namespace Tests.RegistrationStrategies
             var assets = new LightPath.Bank.RegistrationStrategies.ScoopStrategy(assembly, @namespace);
 
             BankAssets.Config.ThrowOnDuplicate = false;
-            BankAssets.Clear();
             BankAssets.Register(assets);
 
             Assert.Equal(3, assets.All.Count);

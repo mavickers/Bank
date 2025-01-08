@@ -15,13 +15,14 @@ namespace LightPath.Bank.RegistrationStrategies;
 /// </summary>
 public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
 {
+    private readonly object _cacheLock = new();
+    private readonly Dictionary<string, BankEmbeddedResource> _cache = new();
     private readonly List<string> _extensionExclusions = new();
     private readonly List<string> _extensionInclusions = new();
     private readonly List<string> _pathExclusions = new();
     private readonly List<string> _pathInclusions = new();
-    private readonly Dictionary<string, BankEmbeddedResource> _manifestMap = new();
 
-    public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_manifestMap);
+    public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
 
     public Assembly Assembly { get; }
     /// <summary>
@@ -39,7 +40,7 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
         UrlPrepend = urlPrepend;
     }
 
-    public BankEmbeddedResource this[string key] => _manifestMap.FirstOrDefault(item => string.Equals(item.Key, key, StringComparison.CurrentCultureIgnoreCase)).Value;
+    public BankEmbeddedResource this[string key] => _cache.FirstOrDefault(item => string.Equals(item.Key, key, StringComparison.CurrentCultureIgnoreCase)).Value;
 
     [Obsolete("Use ExcludePaths instead")]
     public IBankAssetRegistrationStrategy Exclude(params string[] exclusions) => ExcludePaths(exclusions);
@@ -85,9 +86,9 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
             };
 
             BankAssets.Register(resource);
-            _manifestMap.Add(entry.Key, resource);
+            lock(_cacheLock) if (!_cache.ContainsKey(entry.Key)) _cache.Add(entry.Key, resource);
         }
 
-        return _manifestMap.Select(item => item.Value).ToList().AsReadOnly();
+        return _cache.Select(item => item.Value).ToList().AsReadOnly();
     }
 }

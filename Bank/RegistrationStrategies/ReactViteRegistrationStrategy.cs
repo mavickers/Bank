@@ -13,14 +13,14 @@ namespace LightPath.Bank.RegistrationStrategies;
 [Obsolete("No longer supported - use ViteReactLib strategy")]
 public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
 {
+    private readonly object _cacheLock = new();
+    private readonly Dictionary<string, BankEmbeddedResource> _cache = new();
     private readonly List<string> _extensionExclusions = new();
     private readonly List<string> _extensionInclusions = new();
     private readonly List<string> _pathExclusions = new();
     private readonly List<string> _pathInclusions = new();
-    private dynamic _manifestJson;
-    private readonly Dictionary<string, BankEmbeddedResource> _manifestMap = new();
 
-    public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_manifestMap);
+    public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
 
     public Assembly Assembly { get; }
     /// <summary>
@@ -62,8 +62,6 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
         var manifestJson = reader == null ? null : System.Web.Helpers.Json.Decode(reader.ReadToEnd());
 
         if (manifestJson == null) return new List<BankEmbeddedResource>().AsReadOnly();
-
-        _manifestJson = manifestJson;
 
         foreach (var entry in manifestJson)
         {
@@ -126,10 +124,10 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
                 var resourceKey = KeyPrefix.Trim() == "" ? $"EmbeddedResource-{Guid.NewGuid()}-({resource.Url})" : $"{KeyPrefix.Trim()}{resourceKeyFilename}";
 
                 BankAssets.Register(resourceKey, resource);
-                _manifestMap.Add(file, resource);
+                lock(_cacheLock) if (!_cache.ContainsKey(file)) _cache.Add(file, resource);
             }
         }
 
-        return _manifestMap.Select(item => item.Value).ToList().AsReadOnly();
+        return _cache.Select(item => item.Value).ToList().AsReadOnly();
     }
 }

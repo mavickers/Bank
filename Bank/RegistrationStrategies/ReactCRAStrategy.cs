@@ -12,14 +12,14 @@ namespace LightPath.Bank.RegistrationStrategies
 {
     public class ReactCRAStrategy : IBankAssetRegistrationStrategy
     {
+        private readonly object _cacheLock = new();
+        private readonly Dictionary<string, BankEmbeddedResource> _cache = new();
         private readonly List<string> _extensionInclusions = new();
         private readonly List<string> _extensionExclusions = new();
         private readonly List<string> _pathExclusions = new();
         private readonly List<string> _pathInclusions = new();
-        private dynamic _manifestJson;
-        private readonly Dictionary<string, BankEmbeddedResource> _manifestMap = new();
 
-        public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_manifestMap);
+        public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
 
         public Assembly Assembly { get; }
         /// <summary>
@@ -60,8 +60,6 @@ namespace LightPath.Bank.RegistrationStrategies
 
             if (manifestJson == null || manifestJson.files == null) return new List<BankEmbeddedResource>().AsReadOnly();
 
-            _manifestJson = manifestJson;
-
             foreach (var file in manifestJson.files)
             {
                 var key = (string)file.Key.ToString();
@@ -87,10 +85,10 @@ namespace LightPath.Bank.RegistrationStrategies
                 };
 
                 BankAssets.Register(resource);
-                _manifestMap.Add(key, resource);
+                lock(_cacheLock) if (!_cache.ContainsKey(key)) _cache.Add(key, resource);
             }
 
-            return _manifestMap.Select(item => item.Value).ToList().AsReadOnly();
+            return _cache.Select(item => item.Value).ToList().AsReadOnly();
         }
     }
 }

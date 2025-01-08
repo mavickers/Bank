@@ -15,7 +15,6 @@ namespace Tests.RegistrationStrategies
             var assets = new LightPath.Bank.RegistrationStrategies.DotNetMvcViewsStrategy(assembly, @namespace);
 
             BankAssets.Config.ThrowOnDuplicate = false;
-            BankAssets.Clear();
             BankAssets.Register(assets);
 
             Assert.Equal(2, assets.All.Count);
