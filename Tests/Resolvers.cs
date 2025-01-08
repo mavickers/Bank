@@ -1,11 +1,14 @@
 ﻿using LightPath.Bank;
 using LightPath.Bank.Interfaces;
 using System.Reflection;
+using Xunit.Abstractions;
 
 namespace Tests
 {
     public class Resolvers
     {
+        private readonly ITestOutputHelper _output;
+
         public class TestResolver1 : IBankEmbeddedResourceResolver
         {
             public bool IsResolving(string locator, BankEmbeddedResource resource)
@@ -44,8 +47,10 @@ namespace Tests
             Variables = { { "injected", "Hello World!" } }
         };
 
-        public Resolvers()
+        public Resolvers(ITestOutputHelper output)
         {
+            _output = output;
+
             BankAssets.Config.ThrowOnDuplicate = false;
             BankAssets.Register("script-1", script1);
             BankAssets.Register("script-2", script2);

@@ -13,12 +13,14 @@ namespace LightPath.Bank.RegistrationStrategies;
 [Obsolete("No longer supported - use ViteReactLib strategy")]
 public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
 {
+    private readonly object _cacheLock = new();
+    private readonly Dictionary<string, BankEmbeddedResource> _cache = new();
+    private readonly List<string> _extensionExclusions = new();
     private readonly List<string> _extensionInclusions = new();
     private readonly List<string> _pathExclusions = new();
-    private dynamic _manifestJson;
-    private readonly Dictionary<string, BankEmbeddedResource> _manifestMap = new();
+    private readonly List<string> _pathInclusions = new();
 
-    public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_manifestMap);
+    public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
 
     public Assembly Assembly { get; }
     /// <summary>
@@ -43,9 +45,15 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
     [Obsolete("Use ExcludePaths instead")]
     public IBankAssetRegistrationStrategy Exclude(params string[] exclusions) => ExcludePaths(exclusions);
 
-    public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.ExcludePaths(_pathExclusions, exclusions);
+    public IBankAssetRegistrationStrategy ExcludeExtensions(params string[] exclusions) => this.SafeAdd(_extensionExclusions, exclusions);
 
-    public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions) => this.IncludeExtensions(_extensionInclusions, inclusions);
+    public IBankAssetRegistrationStrategy ExcludePaths(params string[] exclusions) => this.SafeAdd(_pathExclusions, exclusions);
+
+    public IBankAssetRegistrationStrategy IncludeExtensions(params string[] inclusions) => this.SafeAdd(_extensionInclusions, inclusions);
+    
+    public IBankAssetRegistrationStrategy IncludePaths(params string[] inclusions) => this.SafeAdd(_pathInclusions, inclusions);
+
+    public IList<string> Filters(Constants.FilterTypes filter) => this.GetFilters(filter, _extensionExclusions, _extensionInclusions, _extensionExclusions, _pathInclusions);
 
     public IList<BankEmbeddedResource> Register()
     {
@@ -54,8 +62,6 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
         var manifestJson = reader == null ? null : System.Web.Helpers.Json.Decode(reader.ReadToEnd());
 
         if (manifestJson == null) return new List<BankEmbeddedResource>().AsReadOnly();
-
-        _manifestJson = manifestJson;
 
         foreach (var entry in manifestJson)
         {
@@ -70,31 +76,25 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
             // add the entry filename... are going to use the file specified as the entry key.
 
             var entryFile = (string)entry.Key;
-            var entryExtension = entryFile.Split('.').Last().ToLower();
 
-            if (!_pathExclusions.Contains(entryExtension)) files.Add(entryFile);
+            if (this.PassesFilters(entryFile)) files.Add(entryFile);
 
             // now add the entry app js... it should be the file property in the config
 
             var appFile = (string)entryConfig.file;
-            var appExtension = appFile.Split('.').Last().ToLower();
 
-            if (!_pathExclusions.Contains(appExtension)) files.Add(appFile);
+            if (this.PassesFilters(appFile)) files.Add(appFile);
 
             // now iterate through the css files and add
 
             foreach (var cssFile in entryCss)
             {
-                var cssFileExtension = cssFile.Split('.').Last().ToLower();
-
-                if (!_pathExclusions.Contains(cssFileExtension)) files.Add(cssFile);
+                if (this.PassesFilters(cssFile)) files.Add(cssFile);
             }
 
             foreach (var assetFile in entryAssets)
             {
-                var cssFileExtension = assetFile.Split('.').Last().ToLower();
-
-                if (!_pathExclusions.Contains(cssFileExtension)) files.Add(assetFile);
+                if (this.PassesFilters(assetFile)) files.Add(assetFile);
             }
 
             // iterate through the built file list and create/add the resource
@@ -116,16 +116,18 @@ public class ReactViteRegistrationStrategy : IBankAssetRegistrationStrategy
                     UrlPrepend = UrlPrepend,
                     ContentProcessors = fileExtension.EndsWith("css") ? new() { new ReactCssContentProcessor(Assembly, NameSpace, UrlPrepend) } : null
                 };
-                var resourceKeyFilename = fileExtension == "js" ? $"{entryName}-js-{fileIndex:0000}" :
-                    fileExtension == "css" ? $"{entryName}-css-{fileIndex:0000}" :
-                    $"{entryName}-{fileExtension}-{fileIndex:0000}";
+                var resourceKeyFilename = fileExtension == "js" 
+                                          ? $"{entryName}-js-{fileIndex:0000}" 
+                                          : fileExtension == "css" 
+                                              ? $"{entryName}-css-{fileIndex:0000}" 
+                                              : $"{entryName}-{fileExtension}-{fileIndex:0000}";
                 var resourceKey = KeyPrefix.Trim() == "" ? $"EmbeddedResource-{Guid.NewGuid()}-({resource.Url})" : $"{KeyPrefix.Trim()}{resourceKeyFilename}";
 
                 BankAssets.Register(resourceKey, resource);
-                _manifestMap.Add(file, resource);
+                lock(_cacheLock) if (!_cache.ContainsKey(file)) _cache.Add(file, resource);
             }
         }
 
-        return _manifestMap.Select(item => item.Value).ToList().AsReadOnly();
+        return _cache.Select(item => item.Value).ToList().AsReadOnly();
     }
 }

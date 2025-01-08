@@ -14,6 +14,7 @@ namespace Tests.RegistrationStrategies
             var filteredResourceNames = resourceNames.Where(name => name.StartsWith($"{assembly.GetName().Name}.{@namespace}")).ToList();
             var assets = new LightPath.Bank.RegistrationStrategies.DotNetMvcViewsStrategy(assembly, @namespace);
 
+            BankAssets.Config.ThrowOnDuplicate = false;
             BankAssets.Register(assets);
 
             Assert.Equal(2, assets.All.Count);
