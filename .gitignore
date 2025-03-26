@@ -1,6 +1,7 @@
 .vs/
 Bank/bin/
 Bank/obj/
+Bank/Properties/PublishProfiles/
 Tests/bin/
 Tests/obj/
 TestApp/bin/
@@ -8,8 +9,7 @@ TestApp/obj/
 TestApp.Library/bin/
 TestApp.Library/obj/
 packages/
-*.user
 
-Bank/Properties/PublishProfiles/
 
 *.cache
+*.user
