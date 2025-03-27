@@ -54,10 +54,19 @@ namespace TestApp
                 ContentType = "application/javascript"
             };
 
+            var scriptResource4 = new BankEmbeddedResource
+            {
+                Assembly = Assembly.GetExecutingAssembly(),
+                NameSpace = "Scripts",
+                FileName = "RandoScript.js",
+                ContentType = "application/javascript"
+            };
+
             BankAssets.Register("asp-net-logo", imageResource);
             BankAssets.Register("hello-world-script", scriptResource1);
             BankAssets.Register("hello-injected-script", scriptResource2);
             BankAssets.Register("hello-world-script-bundled", scriptResource3);
+            BankAssets.Register("rando-script", scriptResource4);
             
             var testAssets = BankAssets.Register(new ViteReactLibStrategy(Assembly.GetAssembly(typeof(TestApp.Library.Constants)), "Scripts.ClientApp.dist"));
 
