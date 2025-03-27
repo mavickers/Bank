@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 
 namespace LightPath.Bank
 {
@@ -32,6 +33,7 @@ namespace LightPath.Bank
         /// </summary>
         public Dictionary<string, string> Attributes { get; } = new();
         public List<IBankAssetContentProcessor> ContentProcessors;
+        [JsonIgnore]
         public byte[] Contents
         {
             get
@@ -52,6 +54,7 @@ namespace LightPath.Bank
 
                 return _contents;
             }
+            internal set => _contents = value;
         }
 
         /// <summary>

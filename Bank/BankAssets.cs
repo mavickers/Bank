@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using LightPath.Bank.Commands;
 
 namespace LightPath.Bank
 {
@@ -11,6 +12,7 @@ namespace LightPath.Bank
     {
         private const string _pathPrefix = "/lightpath.bank/";
         private static readonly ConcurrentDictionary<string, BankEmbeddedResource> _cache = new();
+        private static readonly ConcurrentDictionary<string, IBankCommand> _commands = new();
         private static readonly List<IBankEmbeddedResourceResolver> _resolvers = new();
 
         public static IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
@@ -32,7 +34,7 @@ namespace LightPath.Bank
 
         public static bool ContainsVirtualPath(string virtualPath) => GetByVirtualPath(virtualPath) != null;
 
-        public static BankEmbeddedResource GetByKey(string key) => _cache.ContainsKey(key) ? _cache[key] : null;
+        public static BankEmbeddedResource GetByKey(string key) => _cache.ContainsKey(key) ? _cache[key] : _commands.ContainsKey(key) ? _commands[key].GetResource() : null;
 
         public static BankEmbeddedResource GetByUrl(string url)
         {
@@ -70,6 +72,11 @@ namespace LightPath.Bank
 
         public static bool Register(string key, BankEmbeddedResource resource)
         {
+            if (_commands.IsEmpty)
+            {
+                _commands.AddOrUpdate("$table", new TableCommand(_cache), (k, v) => v);
+            }
+
             var _key = !string.IsNullOrWhiteSpace(key) ? key : resource.ResourceKey;
 
             if (_cache.ContainsKey(_key)) return Config.ThrowOnDuplicate ? throw new Exception($"Asset with key {_key} is already registered") : false;
