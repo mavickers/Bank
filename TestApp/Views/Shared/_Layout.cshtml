@@ -46,8 +46,10 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
-    @Html.RenderEmbeddedResource("hello-world-script", true)
-    @Html.RenderEmbeddedResource("hello-injected-script", true)
+    <!-- start -->
+    @Html.EmbeddedResource("hello-world-script").WithCacheBuster().Render()
+    @Html.EmbeddedResource("hello-injected-script").WithCacheBuster().WithAttribute("data-empty-attribute").WithAttribute("data-attribute", "value").Render()
+    <!-- end -->
     @Scripts.Render("~/bundles/hello-world")
     @Scripts.Render("~/bundles/test")
     <script type="text/javascript" src="/LightPath.Bank/rando-script"></script>

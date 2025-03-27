@@ -1,10 +1,10 @@
-﻿using LightPath.Bank.Interfaces;
+﻿using LightPath.Bank.Commands;
+using LightPath.Bank.Interfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using LightPath.Bank.Commands;
 
 namespace LightPath.Bank
 {
@@ -14,6 +14,11 @@ namespace LightPath.Bank
         private static readonly ConcurrentDictionary<string, BankEmbeddedResource> _cache = new();
         private static readonly ConcurrentDictionary<string, IBankCommand> _commands = new();
         private static readonly List<IBankEmbeddedResourceResolver> _resolvers = new();
+
+        static BankAssets()
+        {
+            _commands.AddOrUpdate("$table", new TableCommand(_cache), (_, v) => v);
+        }
 
         public static IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
 
@@ -72,11 +77,6 @@ namespace LightPath.Bank
 
         public static bool Register(string key, BankEmbeddedResource resource)
         {
-            if (_commands.IsEmpty)
-            {
-                _commands.AddOrUpdate("$table", new TableCommand(_cache), (k, v) => v);
-            }
-
             var _key = !string.IsNullOrWhiteSpace(key) ? key : resource.ResourceKey;
 
             if (_cache.ContainsKey(_key)) return Config.ThrowOnDuplicate ? throw new Exception($"Asset with key {_key} is already registered") : false;

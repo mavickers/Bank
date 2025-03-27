@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
+using LightPath.Bank.Builders;
 
 namespace LightPath.Bank
 {
@@ -32,6 +33,8 @@ namespace LightPath.Bank
         {
             return string.Concat(source.Select((x, i) => i > 0 && char.IsUpper(x) ? $"-{x}" : x.ToString())).ToLower();
         }
+
+        public static RenderBuilder EmbeddedResource(this HtmlHelper htmlHelper, string resourceKey) => new(htmlHelper, resourceKey);
 
         public static byte[] GetEmbeddedBytes(BankEmbeddedResource resource) => GetEmbeddedBytes(resource.Assembly, resource.NameSpace, resource.FileName);
 
@@ -65,10 +68,13 @@ namespace LightPath.Bank
         //public static Stream Open(BankEmbeddedResource resource) => resource.Assembly.GetManifestResourceStream($"{resource.Assembly.GetName().Name}.{resource.NameSpace}.{resource.FileName}");
         public static Stream Open(BankEmbeddedResource resource) => new MemoryStream(resource.Contents);
 
+        [Obsolete("Use RenderBuilder")]
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey) => htmlHelper.RenderEmbeddedResource(resourceKey, false);
 
+        [Obsolete("Use RenderBuilder")]
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey, dynamic helperAttributes = null) => RenderEmbeddedResource(htmlHelper, resourceKey, false, helperAttributes);
 
+        [Obsolete("Use RenderBuilder")]
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, string resourceKey, bool withCacheBuster = false, dynamic helperAttributes = null)
         {
             if (string.IsNullOrWhiteSpace(resourceKey)) return MvcHtmlString.Create("<!-- unable to render embedded resource because the resourceKey was empty or null -->");
@@ -77,6 +83,7 @@ namespace LightPath.Bank
             return RenderEmbeddedResource(htmlHelper, BankAssets.GetByKey(resourceKey), withCacheBuster, helperAttributes);
         }
 
+        [Obsolete("Use RenderBuilder")]
         public static MvcHtmlString RenderEmbeddedResource(this HtmlHelper htmlHelper, BankEmbeddedResource resource, bool withCacheBuster = false, dynamic helperAttributes = null)
         {
             if (resource == null) return MvcHtmlString.Create("<!-- embedded resource is null -->");
