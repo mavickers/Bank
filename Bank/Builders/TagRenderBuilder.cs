@@ -7,7 +7,7 @@ using static LightPath.Bank.Constants.TagClosingTypes;
 
 namespace LightPath.Bank.Builders
 {
-    public class RenderBuilder
+    public class TagRenderBuilder
     {
         private readonly Dictionary<string, string> _attributes = new();
         private readonly HtmlHelper _htmlHelper;
@@ -16,14 +16,14 @@ namespace LightPath.Bank.Builders
         private bool _isEnabled = true;
         private static readonly List<RenderModel> _renderTypes = new();
 
-        static RenderBuilder()
+        static TagRenderBuilder()
         {
             _renderTypes.Add(new RenderModel("link", "href", UnclosedTag, new List<string> { "text/css" }, new Dictionary<string, string> { { "href", "#" }, { "rel", "stylesheet" } }));
             _renderTypes.Add(new RenderModel("img", "src", SelfClosingTag, new List<string> { "image/gif", "image/jpeg", "image/png", "image/tiff" }, new Dictionary<string, string> { { "src", "#" } }));
             _renderTypes.Add(new RenderModel("script", "src", ClosedTag, new List<string> { "application/javascript", "text/javascript" }, new Dictionary<string, string> { { "src", "#" } }));
         }
 
-        public RenderBuilder(HtmlHelper htmlHelper, string resourceKey)
+        public TagRenderBuilder(HtmlHelper htmlHelper, string resourceKey)
         {
             _htmlHelper = htmlHelper;
             _resourceKey = resourceKey;
@@ -89,14 +89,14 @@ namespace LightPath.Bank.Builders
             return MvcHtmlString.Create($"<{renderType.Tag} {attributesString}{string.Format(Constants.TagClosures[renderType.TagClosingType], renderType.Tag)}");
         }
 
-        public RenderBuilder WithAttribute(string key)
+        public TagRenderBuilder WithAttribute(string key)
         {
             _attributes.Add(key, null);
 
             return this;
         }
 
-        public RenderBuilder WithAttribute(string key, string value)
+        public TagRenderBuilder WithAttribute(string key, string value)
         {
             _attributes.Add(key, value);
 
@@ -107,7 +107,7 @@ namespace LightPath.Bank.Builders
         /// Adds a cache buster to the resource URL.
         /// </summary>
         /// <returns></returns>
-        public RenderBuilder WithCacheBuster()
+        public TagRenderBuilder WithCacheBuster()
         {
             _withCacheBuster = true;
 
@@ -123,7 +123,7 @@ namespace LightPath.Bank.Builders
         /// If the conditionFlag is false, the resource will not be rendered. The
         /// default state of the builder is enabled.
         /// </remarks>
-        public RenderBuilder WithCondition(bool conditionFlag)
+        public TagRenderBuilder WithCondition(bool conditionFlag)
         {
             _isEnabled = conditionFlag;
 

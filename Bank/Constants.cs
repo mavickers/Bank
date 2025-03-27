@@ -5,6 +5,8 @@ namespace LightPath.Bank
 {
     public static class Constants
     {
+        public enum BundleTypes { Script, Style }
+
         public enum FilterTypes
         {
             [Description("Extension Exclusions")] ExtensionExclusions,
@@ -16,8 +18,11 @@ namespace LightPath.Bank
         public struct MvcMessages
         {
             public const string KeyNotFound = "<!-- unable to render embedded resource because the resourceKey '{0}' was not found -->";
+            public const string NullBundle = "<!-- bundle was not found or null -->";
+            public const string NullBundlePath = "<!-- unable to render bundle because the bundlePath was empty or null -->";
             public const string NullResource = "<!-- embedded resource is null -->";
             public const string NullResourceKey = "<!-- unable to render embedded resource because the resourceKey was empty or null -->";
+            public const string UnsupportedBundleType = "<!-- unable to render bundle because the bundle type is not supported -->";
             public const string UnsupportedContentType = "<!-- unable to render embedded resource '{0}' because the content type '{1}' is not supported -->";
         }
 

@@ -5,8 +5,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    @Html.BundledResource("~/Content/css").Render()
+    @Html.BundledResource("~/bundles/modernizr").Render()
     <style>
         .flipOnHover:hover {
             -webkit-transform: scaleX(-1);
@@ -31,7 +31,7 @@
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
-                @Html.RenderEmbeddedResource("asp-net-logo", new { @class = "flipOnHover", dataTest = "one two three" })
+                @Html.EmbeddedResource("asp-net-logo").WithAttribute("class", "flipOnHover").WithAttribute("dataTest", "one two three").Render();
             </div>
         </div>
     </div>
@@ -43,15 +43,15 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    @Html.BundledResource("~/bundles/jquery").Render()
+    @Html.BundledResource("~/bundles/bootstrap").Render()
     @RenderSection("scripts", required: false)
     <!-- start -->
     @Html.EmbeddedResource("hello-world-script").WithCacheBuster().Render()
     @Html.EmbeddedResource("hello-injected-script").WithCacheBuster().WithAttribute("data-empty-attribute").WithAttribute("data-attribute", "value").Render()
+    @Html.BundledResource("~/bundles/hello-world").WithCacheBuster().WithAttribute("data-empty-attribute").WithAttribute("data-attribute", "value").Render()
+    @Html.BundledResource("~/bundles/test").Render()
+    @Html.EmbeddedResource("rando-script").Render()
     <!-- end -->
-    @Scripts.Render("~/bundles/hello-world")
-    @Scripts.Render("~/bundles/test")
-    <script type="text/javascript" src="/LightPath.Bank/rando-script"></script>
 </body>
 </html>

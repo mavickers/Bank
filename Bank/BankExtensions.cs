@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Optimization;
+using WebGrease.Css.Extensions;
 
 namespace LightPath.Bank
 {
@@ -40,10 +41,7 @@ namespace LightPath.Bank
         {
             if (supplementalDictionary == null) return source;
 
-            foreach (var pair in supplementalDictionary)
-            {
-                if (!source.ContainsKey(pair.Key)) source.Add(pair.Key, pair.Value);
-            }
+            supplementalDictionary.ForEach(pair => source[pair.Key] = pair.Value);
 
             return source;
         }
