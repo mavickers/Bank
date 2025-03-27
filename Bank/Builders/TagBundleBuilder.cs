@@ -68,7 +68,7 @@ namespace LightPath.Bank.Builders
 
         private MvcHtmlString RenderStyle()
         {
-            var renderedPath = $"{_bundlePath}{(_withCacheBuster ? $"?{DateTime.Now.Ticks}" : string.Empty)}";
+            var renderedPath = $"{_bundlePath}{(_withCacheBuster ? $"?v={DateTime.Now.Ticks}" : string.Empty)}";
             var baseHtml = Styles.Render(renderedPath).ToHtmlString();
             var attributesToRender = new Dictionary<string, string>();
 
