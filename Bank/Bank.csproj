@@ -21,9 +21,9 @@
         <PackageTags></PackageTags>
         <Description>A library for registering, retrieving and rendering embedded resources</Description>
         <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-        <Version>1.5.2</Version>
-        <AssemblyVersion>1.5.2</AssemblyVersion>
-        <FileVersion>1.5.2</FileVersion>
+        <Version>1.5.4.5</Version>
+        <AssemblyVersion>1.5.4.5</AssemblyVersion>
+        <FileVersion>1.5.4.5</FileVersion>
         <LangVersion>latest</LangVersion>
         <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
     </PropertyGroup>
