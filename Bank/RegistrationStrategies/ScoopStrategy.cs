@@ -17,7 +17,8 @@ namespace LightPath.Bank.RegistrationStrategies
         private readonly List<string> _pathExclusions = new();
         private readonly List<string> _pathInclusions = new();
 
-        public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
+        public IDictionary<string, BankEmbeddedResource> All => AllAssets;
+        public IDictionary<string, BankEmbeddedResource> AllAssets => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
         public Assembly Assembly { get; }
         public string NameSpace { get; }
         public string StartingPoint => Assembly == null || string.IsNullOrWhiteSpace(NameSpace) ? null : $"{Assembly.GetName().Name}.{NameSpace}";
@@ -53,12 +54,13 @@ namespace LightPath.Bank.RegistrationStrategies
             foreach (var embeddedResource in filteredEmbeddedResources)
             {
                 var filename = embeddedResource.Remove(0, StartingPoint.Length + 1);
+                var fileExtension = filename.Split('.').Last().ToLower();
                 var bankResource = new BankEmbeddedResource
                 {
                     Assembly = Assembly,
                     FileName = filename,
                     NameSpace = NameSpace,
-                    ContentType = BankHelpers.MimeMappings["cshtml"],
+                    ContentType = BankHelpers.MimeMappings.TryGetValue(fileExtension, out var mapping) ? mapping : "text/plain",
                     UrlPrepend = UrlPrepend
                 };
 

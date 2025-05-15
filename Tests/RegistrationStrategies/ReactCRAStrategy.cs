@@ -1,6 +1,6 @@
 ﻿using LightPath.Bank;
-using System.Reflection;
 using LightPath.Bank.ContentProcessors;
+using System.Reflection;
 
 namespace Tests.RegistrationStrategies
 {

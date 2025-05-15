@@ -1,16 +1,19 @@
 ﻿using LightPath.Bank.Commands;
+using LightPath.Bank.Extensions;
 using LightPath.Bank.Interfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Web.Optimization;
 
 namespace LightPath.Bank
 {
     public static class BankAssets
     {
         private const string _pathPrefix = "/lightpath.bank/";
+        private static readonly Dictionary<Constants.BundleTypes, string> _bundleTypeExtensionMap = new() { { Constants.BundleTypes.Script, ".js" }, { Constants.BundleTypes.Style, ".css" } };
         private static readonly ConcurrentDictionary<string, BankEmbeddedResource> _cache = new();
         private static readonly ConcurrentDictionary<string, IBankCommand> _commands = new();
         private static readonly List<IBankEmbeddedResourceResolver> _resolvers = new();
@@ -21,6 +24,26 @@ namespace LightPath.Bank
         }
 
         public static IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
+
+        public static Bundle AddBundle(IBankAssetRegistrationStrategy strategy, string path, Constants.BundleTypes bundleType)
+        {
+            if (strategy == null) throw new ArgumentNullException(nameof(strategy));
+            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(path));
+            if (!strategy.AnyAssets()) strategy.Register();
+            if (!strategy.AnyAssets()) return null;
+
+            var bundle = bundleType == Constants.BundleTypes.Style ? new StyleBundle(path) : new ScriptBundle(path) as Bundle;
+
+            bundle.Transforms.Clear();
+
+            var assets = strategy.AllAssets.Where(asset => asset.Value.FileName.ToLower().EndsWith(_bundleTypeExtensionMap[bundleType])).Select(asset => asset.Value);
+
+            foreach (var asset in assets) bundle.Include(asset);
+
+            BundleTable.Bundles.Add(bundle);
+
+            return bundle;
+        }
 
         public struct Config
         {
@@ -70,6 +93,8 @@ namespace LightPath.Bank
 
             return GetByKey(key);
         }
+
+        public static string GetUrlByKey(string key) => GetByKey(key)?.Url;
 
         public static IList<BankEmbeddedResource> Register(IBankAssetRegistrationStrategy strategy) => strategy.Register();
 
