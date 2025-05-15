@@ -14,6 +14,8 @@ namespace LightPath.Bank.Extensions
             resources?.Where(resource => resource.StartsWith(strategy.StartingPoint, StringComparison.InvariantCultureIgnoreCase))
                       .Where(resource => PassesFilters(strategy, resource)) ?? new List<string>().AsReadOnly();
 
+        public static bool AnyAssets(this IBankAssetRegistrationStrategy strategy) => strategy.All.Any();
+
         public static bool PassesFilters(this IBankAssetRegistrationStrategy strategy, string filename)
         {
             if (strategy.Filters(ExtensionExclusions).Any(filter => filename.EndsWith(filter, StringComparison.InvariantCultureIgnoreCase))) return false;

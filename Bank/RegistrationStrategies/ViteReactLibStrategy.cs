@@ -22,7 +22,8 @@ public class ViteReactLibStrategy : IBankAssetRegistrationStrategy
     private readonly List<string> _pathExclusions = new();
     private readonly List<string> _pathInclusions = new();
 
-    public IDictionary<string, BankEmbeddedResource> All => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
+    public IDictionary<string, BankEmbeddedResource> All => AllAssets;
+    public IDictionary<string, BankEmbeddedResource> AllAssets => new ReadOnlyDictionary<string, BankEmbeddedResource>(_cache);
 
     public Assembly Assembly { get; }
     /// <summary>

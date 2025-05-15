@@ -1,14 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace LightPath.Bank.Interfaces
 {
     public interface IBankAssetRegistrationStrategy
     {
+        [Obsolete("User AllAssets")]
+        IDictionary<string, BankEmbeddedResource> All { get; }
+
         /// <summary>
         /// All resources registered through this strategy instance.
         /// </summary>
-        IDictionary<string, BankEmbeddedResource> All { get; }
+        IDictionary<string, BankEmbeddedResource> AllAssets { get; }
 
         Assembly Assembly { get; }
         string NameSpace { get; }
