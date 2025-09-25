@@ -84,7 +84,7 @@ namespace LightPath.Bank.Builders
                 if (!attributesToRender.ContainsKey(attrDashed)) attributesToRender.Add(attrDashed, attr.Value);
             }
 
-            var attributesString = string.Join(" ", attributesToRender.Select(attr => attr.Key + (string.IsNullOrWhiteSpace(attr.Value) ? string.Empty : $"=\"{attr.Value}\""))).Trim();
+            var attributesString = string.Join(" ", attributesToRender.ToList().Select(attr => attr.Key + (string.IsNullOrWhiteSpace(attr.Value) ? string.Empty : $"=\"{attr.Value}\""))).Trim();
 
             return MvcHtmlString.Create($"<{renderType.Tag} {attributesString}{string.Format(Constants.TagClosures[renderType.TagClosingType], renderType.Tag)}");
         }
