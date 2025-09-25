@@ -80,9 +80,9 @@ namespace LightPath.Bank
             // just perform an ordinary search against virtual path values; otherwise,
             // take the remainder and search against the keys.
 
-            var hasLightPathRef = virtualPath.ToLower().StartsWith($"~{_pathPrefix}");
-            if (!hasLightPathRef) return _cache.FirstOrDefault(res => string.Equals(res.Value.VirtualPath, virtualPath, StringComparison.CurrentCultureIgnoreCase)).Value;
-            var key = virtualPath.Remove(0, _pathPrefix.Length + 1);
+            var hasLightPathRef = virtualPath.StartsWith($"~{_pathPrefix}", StringComparison.OrdinalIgnoreCase);
+            if (!hasLightPathRef) return _cache.FirstOrDefault(res => string.Equals(res.Value.VirtualPath, virtualPath, StringComparison.OrdinalIgnoreCase)).Value;
+            var key = virtualPath.Substring(_pathPrefix.Length + 1);
 
             return GetByKey(key);
         }        
