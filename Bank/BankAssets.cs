@@ -76,20 +76,16 @@ namespace LightPath.Bank
 
         public static BankEmbeddedResource GetByVirtualPath(string virtualPath)
         {
-            var hasLightPathRef = virtualPath.ToLower().StartsWith($"~{_pathPrefix}");
-
             // if the virtual path doesn't start with the bank virtual path prefix,
-            // just perform an ordingary search against virtual path values.
-
-            if (!hasLightPathRef) return _cache.FirstOrDefault(res => string.Equals(res.Value.VirtualPath, virtualPath, StringComparison.CurrentCultureIgnoreCase)).Value;
-
-            // since the url starts with the bank virtual path prefix,
+            // just perform an ordinary search against virtual path values; otherwise,
             // take the remainder and search against the keys.
 
+            var hasLightPathRef = virtualPath.ToLower().StartsWith($"~{_pathPrefix}");
+            if (!hasLightPathRef) return _cache.FirstOrDefault(res => string.Equals(res.Value.VirtualPath, virtualPath, StringComparison.CurrentCultureIgnoreCase)).Value;
             var key = virtualPath.Remove(0, _pathPrefix.Length + 1);
 
             return GetByKey(key);
-        }
+        }        
 
         public static string GetUrlByKey(string key) => GetByKey(key)?.Url;
 
