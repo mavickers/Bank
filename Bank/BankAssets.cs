@@ -66,15 +66,12 @@ namespace LightPath.Bank
 
         public static BankEmbeddedResource GetByUrl(string url)
         {
-            // same setup here as GetByVirtualPath, see notes below
+            var hasLightPathRef = url.StartsWith(_pathPrefix, StringComparison.OrdinalIgnoreCase);
+            var key = hasLightPathRef ? url.Substring(_pathPrefix.Length) : url;
 
-            var hasLightPathRef = url.ToLower().StartsWith(_pathPrefix);
-
-            if (!hasLightPathRef) return _cache.FirstOrDefault(res => new[] { res.Value.BaseUrl, res.Value.Url }.Contains(url, StringComparer.InvariantCultureIgnoreCase)).Value;
-
-            var key = url.Remove(0, _pathPrefix.Length);
-
-            return GetByKey(key);
+            return hasLightPathRef
+                ? GetByKey(key) 
+                : _cache.FirstOrDefault(res => string.Equals(res.Value.BaseUrl, url, StringComparison.InvariantCultureIgnoreCase) || string.Equals(res.Value.Url, url, StringComparison.InvariantCultureIgnoreCase)).Value;
         }
 
         public static BankEmbeddedResource GetByVirtualPath(string virtualPath)
@@ -139,7 +136,18 @@ namespace LightPath.Bank
             return Rekey(_cache.FirstOrDefault(res => res.Value == resource).Key, newKey);
         }
 
-        public static BankEmbeddedResource GetByResolver(string locator) => _cache.FirstOrDefault(resource => _resolvers.Any(resolver => resolver.IsResolving(locator, resource.Value))).Value;
+        public static BankEmbeddedResource GetByResolver(string locator)
+        {
+            foreach (var resource in _cache)
+            {
+                foreach (var resolver in _resolvers)
+                {
+                    if (resolver.IsResolving(locator, resource.Value)) return resource.Value;
+                }
+            }
+
+            return null;
+        }
 
         public static int Total => _cache?.Count ?? 0;
 
