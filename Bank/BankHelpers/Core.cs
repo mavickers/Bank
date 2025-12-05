@@ -47,12 +47,7 @@ namespace LightPath.Bank
 
             resourceStream?.CopyTo(memoryStream);
 
-            var output = memoryStream?.ToArray();
-
-            resourceStream?.Dispose();
-            memoryStream?.Dispose();
-
-            return output;
+            return memoryStream?.ToArray();
         }
 
         public static string GetEmbeddedString(Assembly assembly, string nameSpace, string fileName)
