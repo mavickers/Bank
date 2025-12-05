@@ -1,7 +1,7 @@
 ﻿using LightPath.Bank.Interfaces;
-using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Text;
+using System.Text.Json;
 
 namespace LightPath.Bank.Commands
 {
@@ -19,8 +19,15 @@ namespace LightPath.Bank.Commands
 
         public BankEmbeddedResource GetResource()
         {
-            var json = JsonConvert.SerializeObject(_cache);
-            var res = new BankEmbeddedResource()
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true, // Example: pretty-print JSON
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Example: camelCase properties
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull // Ignore nulls
+            };
+
+            var json = JsonSerializer.Serialize(_cache, options);
+            var res = new BankEmbeddedResource
             {
                 Assembly = GetType().Assembly,
                 NameSpace = "Commands",
