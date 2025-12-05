@@ -36,8 +36,10 @@ namespace LightPath.Bank
 
             context.Response.StatusCode = resource == null ? 404 : 200;
             context.Response.ContentType = resource == null ? context.Response.ContentType : resource.ContentType;
-            
-            if (resource != null) await (BankHelpers.IsTextType(resource) ? context.Response.WriteAsync(resource.Contents.AsString(resource.Variables)) : context.Response.WriteAsync(resource.Contents));
+
+            if (resource == null) return;
+
+            await (BankHelpers.IsTextType(resource) ? context.Response.WriteAsync(resource.Contents.AsString(resource.Variables)) : context.Response.WriteAsync(resource.Contents));
         }
 
         public static bool ConditionsMatch(IOwinContext context) => BankAssets.ContainsUrl(context.Request.Path.Value);
